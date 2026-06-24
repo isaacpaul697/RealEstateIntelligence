@@ -1,0 +1,150 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ============================================================
+   Campus Capital — warm editorial theme
+   Paper canvas · ink type · brass accent · serif display headings.
+   Soft shadows, rounded cards. Light + dark.
+   ============================================================ */
+
+:root {
+  --bg: #f5f2eb;
+  --surface: #fffefb;
+  --surface-2: #f1ece2;
+  --line: #e7e0d2;
+  --line-strong: #d6ccb9;
+
+  --ink: #26231d;
+  --ink-soft: #574f43;
+  --muted: #8a8273;
+  --muted-2: #b1a994;
+
+  /* brass accent (primary) */
+  --gold: #9a7b2e;
+  --gold-bright: #c0973a;
+  --gold-deep: #6d5418;
+  --gold-soft: #f0e6cf;
+  --tan: #e7d9b6;
+
+  /* tones — warmed */
+  --c-good: #3f7a4f;  --c-good-soft: #e6efe4;
+  --c-warn: #b07a23;  --c-warn-soft: #f6ecd6;
+  --c-risk: #b5552c;  --c-risk-soft: #f6e6d9;
+  --c-bad:  #b23b2c;  --c-bad-soft:  #f6e1dc;
+  --c-info: #3a6ea5;  --c-info-soft: #e2ebf3;
+
+  /* charts — editorial, accent-led */
+  --chart-1: #9a7b2e;
+  --chart-2: #3a6ea5;
+  --chart-3: #3f7a4f;
+  --chart-4: #b5552c;
+  --chart-5: #7a5c8f;
+
+  --radius: 14px;
+  --radius-sm: 10px;
+  --shadow: 0 1px 2px rgba(54,42,20,.04), 0 4px 14px rgba(54,42,20,.05);
+  --shadow-lg: 0 10px 34px rgba(54,42,20,.11);
+}
+
+.dark {
+  --bg: #16140f;
+  --surface: #1f1c15;
+  --surface-2: #1a1812;
+  --line: #2c281f;
+  --line-strong: #3a352a;
+
+  --ink: #efe9da;
+  --ink-soft: #c2b8a4;
+  --muted: #948c79;
+  --muted-2: #6b6453;
+
+  --gold: #c0973a;
+  --gold-bright: #d8b057;
+  --gold-deep: #e7c977;
+  --gold-soft: rgba(192,151,58,.14);
+  --tan: #4a4129;
+
+  --c-good-soft: rgba(63,122,79,.18);
+  --c-warn-soft: rgba(176,122,35,.18);
+  --c-risk-soft: rgba(181,85,44,.18);
+  --c-bad-soft:  rgba(178,59,44,.18);
+  --c-info-soft: rgba(58,110,165,.18);
+
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.45);
+  --shadow-lg: 0 12px 36px rgba(0,0,0,.55);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-muted: var(--muted);
+  --color-muted-2: var(--muted-2);
+  --color-gold: var(--gold);
+  --color-gold-bright: var(--gold-bright);
+  --color-gold-deep: var(--gold-deep);
+  --color-gold-soft: var(--gold-soft);
+  --color-good: var(--c-good);
+  --color-good-soft: var(--c-good-soft);
+  --color-warn: var(--c-warn);
+  --color-warn-soft: var(--c-warn-soft);
+  --color-risk: var(--c-risk);
+  --color-risk-soft: var(--c-risk-soft);
+  --color-bad: var(--c-bad);
+  --color-bad-soft: var(--c-bad-soft);
+  --color-info: var(--c-info);
+  --color-info-soft: var(--c-info-soft);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-card: var(--radius);
+  --font-sans: var(--font-geist-sans), "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; min-height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+.num { font-variant-numeric: tabular-nums; }
+.font-display { font-family: var(--font-display); font-optical-sizing: auto; }
+
+/* smooth, consistent interactions */
+a, button { transition: color .15s ease, background-color .15s ease, border-color .15s ease, box-shadow .2s ease, transform .15s ease; }
+
+.nav-scroll::-webkit-scrollbar { width: 6px; }
+.nav-scroll::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 6px; }
+
+/* Leaflet popup + container theming */
+.leaflet-container { background: var(--surface-2); font-family: var(--font-sans); }
+.leaflet-popup-content-wrapper, .leaflet-popup-tip {
+  background: var(--surface); color: var(--ink);
+  box-shadow: var(--shadow-lg); border-radius: var(--radius-sm);
+}
+.leaflet-popup-content { margin: 12px 14px; line-height: 1.5; }
+.leaflet-bar a, .leaflet-bar a:hover { background: var(--surface); color: var(--ink); border-color: var(--line); }
+.cc-logo-marker { background: none; border: none; }
+
+@keyframes ccfade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.cc-fade { animation: ccfade .4s ease both; }
+
+@media print {
+  .no-print { display: none !important; }
+  body { background: #fff; }
+  .print-full { box-shadow: none !important; border: none !important; }
+}
