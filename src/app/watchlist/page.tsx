@@ -94,7 +94,7 @@ export default function WatchlistPage() {
                       <td className="px-4 py-3">
                         <Link href={`/market/${apt.marketId}`} className="block">
                           <div className="font-medium text-ink">{apt.aptName}</div>
-                          <div className="text-xs text-muted">{apt.street ?? "—"}</div>
+                          <div className="text-xs text-muted">{apt.street ?? "n/a"}</div>
                         </Link>
                       </td>
                       <td className="px-4 py-3 text-ink-soft">
@@ -116,7 +116,7 @@ export default function WatchlistPage() {
                           ? apt.notes.length > 40
                             ? apt.notes.slice(0, 40) + "..."
                             : apt.notes
-                          : "—"}
+                          : "n/a"}
                       </td>
                       <td className="px-4 py-3 text-muted text-xs whitespace-nowrap">
                         {timeAgo(apt.savedAt)}

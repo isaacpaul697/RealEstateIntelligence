@@ -1,8 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
-
-const STORAGE_KEY = "cc.watchlist";
+import { createContext, useCallback, useContext, useState } from "react";
 
 export interface SavedApartment {
   aptId: string;
@@ -41,25 +39,9 @@ const Ctx = createContext<WatchlistValue>({
 });
 
 export function WatchlistProvider({ children }: { children: React.ReactNode }) {
+  // In-memory only: saved apartments survive client-side navigation (the
+  // provider lives at the root layout) but are wiped on a full page refresh.
   const [saved, setSaved] = useState<SavedApartment[]>([]);
-  const [hydrated, setHydrated] = useState(false);
-
-  // Restore from localStorage after mount (avoids hydration mismatch)
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) setSaved(JSON.parse(stored) as SavedApartment[]);
-    } catch { /* ignore */ }
-    setHydrated(true);
-  }, []);
-
-  // Persist to localStorage on change (only after initial hydration)
-  useEffect(() => {
-    if (!hydrated) return;
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
-    } catch { /* quota exceeded — ignore */ }
-  }, [saved, hydrated]);
 
   const isSaved = useCallback(
     (aptId: string) => saved.some((a) => a.aptId === aptId),

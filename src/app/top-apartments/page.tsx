@@ -112,10 +112,10 @@ export default function TopApartmentsPage() {
           className="h-10 px-4 bg-surface border border-line text-sm text-ink outline-none focus:border-line-strong flex-1 min-w-[200px]"
           style={{ borderRadius: "var(--radius)" }}
         >
-          <option value="__national__">All Schools — National Top 10</option>
+          <option value="__national__">All Schools · National Top 10</option>
           {filtered.map((m) => (
             <option key={m.market.id} value={m.market.id}>
-              {m.market.shortName} — {m.market.city}, {m.market.state}
+              {m.market.shortName} · {m.market.city}, {m.market.state}
             </option>
           ))}
         </select>
@@ -242,7 +242,7 @@ function SchoolTable({ apts, total, schoolName, onSelect, isSaved }: {
                       Search →
                     </a>
                   ) : (
-                    <span className="text-muted-2">—</span>
+                    <span className="text-muted-2">n/a</span>
                   )}
                 </td>
               </tr>
@@ -323,7 +323,7 @@ function NationalTable({ apts, onSelect, isSaved }: {
                       Search →
                     </a>
                   ) : (
-                    <span className="text-muted-2">—</span>
+                    <span className="text-muted-2">n/a</span>
                   )}
                 </td>
               </tr>

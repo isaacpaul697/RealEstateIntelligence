@@ -5,6 +5,9 @@ export interface ScorecardRow {
   enrollment: number | null;
   enrollmentGrowth: number | null; // annualized %
   acceptanceRate: number | null; // %
+  retentionRate: number | null; // % (4-year full-time)
+  roomBoardOnCampus: number | null; // $/yr
+  roomBoardOffCampus: number | null; // $/yr
   lat: number | null;
   lng: number | null;
 }
@@ -15,13 +18,16 @@ const SPAN = 5;
 
 /**
  * One bulk call returns all campuses (College Scorecard / U.S. Dept. of
- * Education). Keyed by IPEDS unit id. Cached for a day — these are annual data.
+ * Education). Keyed by IPEDS unit id. Cached for a day - these are annual data.
  */
 export async function fetchScorecard(): Promise<Map<number, ScorecardRow>> {
   const fields = [
     "id",
     "latest.student.size",
     "latest.admissions.admission_rate.overall",
+    "latest.student.retention_rate.four_year.full_time",
+    "latest.cost.roomboard.oncampus",
+    "latest.cost.roomboard.offcampus",
     "location.lat",
     "location.lon",
     `${PRIOR_YEAR}.student.size`,
@@ -43,10 +49,16 @@ export async function fetchScorecard(): Promise<Map<number, ScorecardRow>> {
         growth = (Math.pow(size / prior, 1 / SPAN) - 1) * 100;
       }
       const adm = r["latest.admissions.admission_rate.overall"];
+      const ret = r["latest.student.retention_rate.four_year.full_time"];
+      const rbOn = r["latest.cost.roomboard.oncampus"];
+      const rbOff = r["latest.cost.roomboard.offcampus"];
       out.set(r.id, {
         enrollment: size,
         enrollmentGrowth: growth,
         acceptanceRate: adm != null ? adm * 100 : null,
+        retentionRate: ret != null ? Math.round(ret * 1000) / 10 : null,
+        roomBoardOnCampus: rbOn ?? null,
+        roomBoardOffCampus: rbOff ?? null,
         lat: r["location.lat"] ?? null,
         lng: r["location.lon"] ?? null,
       });

@@ -1,19 +1,25 @@
 import type { ScoreFactor } from "@/lib/types";
 
 const toneHex: Record<string, string> = {
+  vivid: "var(--c-vivid)",
   good: "var(--c-good)",
   warn: "var(--c-warn)",
   risk: "var(--c-risk)",
   bad: "var(--c-bad)",
   info: "var(--c-info)",
+  orangeLight: "var(--c-orange-light)",
+  orange: "var(--c-orange)",
+  redBright: "var(--c-red-bright)",
   gold: "var(--gold)",
 };
 
 export function scoreTone(score: number) {
-  if (score >= 71) return "good";
-  if (score >= 60) return "warn";
-  if (score >= 48) return "info";
-  return "bad";
+  if (score >= 80) return "vivid"; // bright green
+  if (score >= 70) return "good"; // dark green
+  if (score >= 65) return "info"; // blue
+  if (score >= 60) return "orangeLight"; // light orange
+  if (score >= 50) return "orange"; // darker orange
+  return "redBright"; // bright red
 }
 
 export function ScoreRing({ score, size = 132, label }: { score: number; size?: number; label?: string }) {

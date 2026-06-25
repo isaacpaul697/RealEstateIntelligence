@@ -107,8 +107,8 @@ export default function ApartmentDrawer({
 
       {/* Drawer panel */}
       <aside
-        className={`fixed top-0 right-0 bottom-0 z-30 w-full sm:w-[420px] bg-surface border-l border-line shadow-[var(--shadow-lg)] flex flex-col transition-transform duration-300 ease-out ${
-          open ? "translate-x-0" : "translate-x-full"
+        className={`fixed top-0 right-0 bottom-0 z-30 w-full sm:w-[420px] bg-surface border-l border-line flex flex-col transition-transform duration-300 ease-out ${
+          open ? "translate-x-0 shadow-[var(--shadow-lg)]" : "translate-x-full shadow-none pointer-events-none"
         }`}
         role="dialog"
         aria-label={apartment ? `Details for ${apartment.name}` : "Apartment detail drawer"}

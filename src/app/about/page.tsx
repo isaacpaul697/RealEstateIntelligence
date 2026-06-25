@@ -16,16 +16,24 @@ const METHOD = [
   { h: "1 · Define the market set", b: "Ten major university markets configured with real federal identifiers (IPEDS unit IDs), geographic coordinates, and conference/region metadata." },
   { h: "2 · Fetch live enrollment data", b: "The College Scorecard API (api.data.gov) provides official enrollment, acceptance rates, and historical student counts. Growth is annualized over a 5-year baseline." },
   { h: "3 · Pull demand signals", b: "Google News RSS surfaces recent student-housing headlines per campus. Article volume serves as a proxy for market activity and demand momentum." },
-  { h: "4 · Map real apartments", b: "OpenStreetMap's Overpass API returns named apartment buildings within 3 km of each campus — with addresses, websites, and exact distances." },
+  { h: "4 · Map real apartments", b: "OpenStreetMap's Overpass API returns named apartment buildings within 3 km of each campus, with addresses, websites, and exact distances." },
   { h: "5 · Score 0–100", b: "A transparent weighted model across six factors (enrollment growth, selectivity, demand momentum, rent growth, occupancy, renter-base scale). Rent and occupancy are modeled from live inputs and labeled \"estimated.\"" },
   { h: "6 · Label & rank", b: "Markets are banded into Strong Buy / Watchlist / Needs Diligence / Overpriced, ranked on the map, leaderboard, and a print-ready IC scorecard." },
 ];
 
 const SOURCES = [
-  { name: "College Scorecard", url: "https://collegescorecard.ed.gov/data/", what: "Enrollment, acceptance rate, 5-year growth", provenance: "live" as const },
+  { name: "College Scorecard (IPEDS)", url: "https://collegescorecard.ed.gov/data/", what: "Enrollment, acceptance rate, retention rate, room & board costs, 5-year growth", provenance: "live" as const },
+  { name: "Census ACS 5-Year", url: "https://data.census.gov", what: "County population, median age, renter %, median rent, median income", provenance: "live" as const },
+  { name: "Bureau of Labor Statistics", url: "https://www.bls.gov/lau/", what: "County-level unemployment rate (LAUS)", provenance: "live" as const },
+  { name: "FRED (Federal Reserve)", url: "https://fred.stlouisfed.org", what: "30-year mortgage rate, state housing price index (FHFA)", provenance: "live" as const },
+  { name: "FEMA National Risk Index", url: "https://hazards.fema.gov/nri/", what: "County natural-hazard risk score and rating", provenance: "live" as const },
+  { name: "HUD USER Fair Market Rents", url: "https://www.huduser.gov/portal/dataset/fmr-api.html", what: "Official county Fair Market Rents by bedroom (efficiency–4BR)", provenance: "live" as const },
+  { name: "Wikipedia REST", url: "https://en.wikipedia.org/api/rest_v1/", what: "University summaries and representative campus photos", provenance: "live" as const },
+  { name: "Open-Meteo", url: "https://open-meteo.com", what: "Campus climate normals: mean temperature, sunshine, precipitation", provenance: "live" as const },
+  { name: "USGS Earthquake Catalog", url: "https://earthquake.usgs.gov/fdsnws/event/1/", what: "Seismic history near campus (M3.0+ within 100 km, last 25 yrs)", provenance: "live" as const },
   { name: "Google News RSS", url: "https://news.google.com", what: "Student housing headlines per market", provenance: "live" as const },
   { name: "OpenStreetMap Overpass", url: "https://overpass-api.de", what: "Apartment buildings near campus with websites", provenance: "live" as const },
-  { name: "Wikipedia Pageimages", url: "https://en.wikipedia.org", what: "Official university seals and logos", provenance: "live" as const },
+  { name: "ESPN CDN", url: "https://www.espn.com", what: "University athletic logos", provenance: "live" as const },
 ];
 
 export default function AboutPage() {
@@ -39,7 +47,7 @@ export default function AboutPage() {
             Campus Capital is a portfolio project: a student-housing acquisitions screening platform built to
             look and behave like the desk of a commercial real-estate acquisitions analyst. It combines live university
             enrollment data, real apartment maps, news-driven demand signals, and a transparent acquisition score into one
-            research tool — powered entirely by free, public data sources.
+            research tool, powered entirely by free, public data sources.
           </p>
           <div className="flex flex-wrap gap-2 mt-5">
             {SKILLS.map((s) => (
@@ -83,7 +91,7 @@ export default function AboutPage() {
         <Card>
           <SectionTitle sub="What's under the hood">Tech stack</SectionTitle>
           <div className="flex flex-wrap gap-2">
-            {["Next.js (App Router)", "TypeScript", "Tailwind CSS v4", "React-Leaflet", "College Scorecard API", "OpenStreetMap"].map((t) => (
+            {["Next.js (App Router)", "TypeScript", "Tailwind CSS v4", "React-Leaflet", "College Scorecard API", "Census ACS", "BLS LAUS", "FRED", "FEMA NRI", "HUD FMR", "Wikipedia", "Open-Meteo", "USGS", "OpenStreetMap"].map((t) => (
               <Chip key={t} tone="info">{t}</Chip>
             ))}
           </div>
@@ -95,8 +103,8 @@ export default function AboutPage() {
         <Card>
           <SectionTitle sub="Provenance model">Data transparency</SectionTitle>
           <ul className="text-sm text-ink-soft space-y-2 list-disc pl-4">
-            <li><strong className="text-ink">Live</strong> — pulled directly from an external source (Scorecard, Google News, OSM, Wikipedia).</li>
-            <li><strong className="text-ink">Estimated</strong> — modeled from live inputs. Rent growth and occupancy are derived from enrollment growth and admissions selectivity.</li>
+            <li><strong className="text-ink">Live</strong>: pulled directly from an external source (Scorecard, Census, BLS, FRED, Google News, OSM).</li>
+            <li><strong className="text-ink">Estimated</strong>: modeled from live inputs. Rent growth and occupancy are derived from enrollment growth and admissions selectivity.</li>
             <li>Every data point on every page carries a provenance tag so you always know what's real and what's modeled.</li>
           </ul>
         </Card>

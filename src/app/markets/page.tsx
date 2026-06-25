@@ -4,8 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import { useScoredMarkets } from "@/lib/compute";
 import { Card, LabelChip, Logo, Spinner, StateBlock } from "@/components/ui";
+import { HeadlinesModal } from "@/components/HeadlinesModal";
 import { fmtNum, fmtPct } from "@/lib/scoring";
 import { usePersistedState } from "@/lib/usePersistedState";
+import type { LiveMarket } from "@/lib/types";
 
 type SortKey = "score" | "enrollmentGrowth" | "rent" | "enrollment" | "news";
 
@@ -13,6 +15,7 @@ export default function MarketsPage() {
   const { scored, loading, error } = useScoredMarkets();
   const [sort, setSort] = usePersistedState<SortKey>("cc.markets.sort", "score");
   const [q, setQ] = useState("");
+  const [headlinesFor, setHeadlinesFor] = useState<LiveMarket | null>(null);
 
   const rows = scored
     .filter((m) => m.market.name.toLowerCase().includes(q.toLowerCase()))
@@ -41,7 +44,7 @@ export default function MarketsPage() {
         <div>
           <h1 className="font-display text-2xl font-semibold text-ink tracking-tight">University Markets</h1>
           <p className="text-sm text-muted mt-1">
-            {scored.length} markets screened on live data · click any row for the deep-dive.
+            {scored.length} markets screened on live data · click any row for the deep-dive, or a headline count to read them.
           </p>
         </div>
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Filter markets…"
@@ -76,11 +79,25 @@ export default function MarketsPage() {
                         </span>
                       </Link>
                     </td>
-                    <td className="px-3 py-3 text-right num text-ink-soft">{m.market.enrollment != null ? fmtNum(m.market.enrollment) : "—"}</td>
-                    <td className="px-3 py-3 text-right num text-good">{m.market.enrollmentGrowth != null ? `+${fmtPct(m.market.enrollmentGrowth)}` : "—"}</td>
-                    <td className="px-3 py-3 text-right num text-ink-soft">{m.market.acceptanceRate != null ? `${m.market.acceptanceRate.toFixed(0)}%` : "—"}</td>
+                    <td className="px-3 py-3 text-right num text-ink-soft">{m.market.enrollment != null ? fmtNum(m.market.enrollment) : "n/a"}</td>
+                    <td className="px-3 py-3 text-right num text-good">{m.market.enrollmentGrowth != null ? `+${fmtPct(m.market.enrollmentGrowth)}` : "n/a"}</td>
+                    <td className="px-3 py-3 text-right num text-ink-soft">{m.market.acceptanceRate != null ? `${m.market.acceptanceRate.toFixed(0)}%` : "n/a"}</td>
                     <td className="px-3 py-3 text-right num text-ink-soft">+{fmtPct(m.market.estRentGrowth)}</td>
-                    <td className="px-3 py-3 text-right num text-info font-medium">{m.market.newsCount}</td>
+                    <td className="px-3 py-3 text-right">
+                      <button
+                        onClick={() => setHeadlinesFor(m.market)}
+                        disabled={m.market.newsCount === 0}
+                        title={m.market.newsCount === 0 ? "No recent headlines" : `View ${m.market.newsCount} headlines`}
+                        className="num font-medium text-info hover:text-gold-deep disabled:text-muted-2 disabled:cursor-default inline-flex items-center gap-1 transition-colors"
+                      >
+                        {m.market.newsCount}
+                        {m.market.newsCount > 0 && (
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-60">
+                            <path d="M9 18l6-6-6-6" />
+                          </svg>
+                        )}
+                      </button>
+                    </td>
                     <td className="px-3 py-3"><LabelChip label={m.score.label} /></td>
                     <td className="px-3 py-3 text-right"><span className="font-display font-semibold text-ink num text-lg">{m.score.score}</span></td>
                   </tr>
@@ -89,6 +106,19 @@ export default function MarketsPage() {
             </table>
           </div>
         </Card>
+      )}
+
+      {headlinesFor && (
+        <HeadlinesModal
+          marketId={headlinesFor.id}
+          marketName={headlinesFor.shortName}
+          city={headlinesFor.city}
+          state={headlinesFor.state}
+          logo={headlinesFor.logo}
+          abbr={headlinesFor.abbr}
+          brandColor={headlinesFor.brandColor}
+          onClose={() => setHeadlinesFor(null)}
+        />
       )}
     </div>
   );

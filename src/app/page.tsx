@@ -20,6 +20,19 @@ interface FeedArticle {
 const NEWS_CACHE_KEY = "cc.cache.news";
 const CACHE_TTL = 12 * 60 * 60 * 1000;
 
+/** The live, free, no-mock data sources behind every figure in the app. */
+const SOURCE_CHIPS = [
+  "College Scorecard", "Census ACS", "BLS", "FRED", "FEMA NRI", "HUD FMR",
+  "Wikipedia", "Open-Meteo", "USGS", "OpenStreetMap", "Google News", "ESPN",
+];
+
+const STEPS = [
+  { n: "01", h: "Pull live university data", b: "Federal enrollment, acceptance & retention from the College Scorecard API, with no mock numbers." },
+  { n: "02", h: "Layer the local market", b: "Census demographics, BLS jobs, HUD fair-market rents, FEMA hazard, climate & seismic exposure per county." },
+  { n: "03", h: "Map real supply & demand", b: "Named apartment buildings near each campus from OpenStreetMap, plus live housing headlines from Google News." },
+  { n: "04", h: "Score 0–100", b: "A transparent weighted model blends every signal into one acquisition score, banded from Strong Buy to Overpriced." },
+];
+
 export default function Home() {
   const { scored, loading, error } = useScoredMarkets();
   const [feed, setFeed] = useState<FeedArticle[]>([]);
@@ -56,41 +69,76 @@ export default function Home() {
 
   return (
     <div className="flex flex-col gap-8 cc-fade">
-      {/* hero */}
+      {/* ── Hero ───────────────────────────────────────────── */}
       <Card className="overflow-hidden relative" pad={false}>
-        <div className="p-8 md:p-10 max-w-3xl">
-          <span className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-gold-deep bg-gold-soft rounded-full px-3 py-1">
-            Live acquisitions intelligence
-          </span>
-          <h1 className="font-display text-[34px] md:text-[44px] leading-[1.08] font-semibold text-ink mt-5 tracking-tight">
-            Find the next student-housing market <span className="italic text-gold-deep">before the market does.</span>
+        {/* warm radial wash */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: "radial-gradient(900px 360px at 88% -10%, var(--gold-soft) 0%, transparent 60%)" }}
+        />
+        <div className="relative p-8 md:p-12">
+          <div className="flex flex-wrap items-center gap-2 mb-5">
+            <span className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-gold-deep bg-gold-soft rounded-full px-3 py-1">
+              <span className="relative flex w-2 h-2">
+                <span className="absolute inline-flex w-full h-full rounded-full bg-good opacity-60 animate-ping" />
+                <span className="relative inline-flex w-2 h-2 rounded-full bg-good" />
+              </span>
+              Live data · zero mock
+            </span>
+            <span className="inline-flex items-center text-[11px] font-semibold uppercase tracking-wider text-muted bg-surface-2 border border-line rounded-full px-3 py-1">
+              Portfolio project
+            </span>
+          </div>
+
+          <h1 className="font-display text-[34px] md:text-[50px] leading-[1.05] font-semibold text-ink tracking-tight max-w-4xl">
+            Find the next student-housing market{" "}
+            <span className="italic text-gold-deep">before the market does.</span>
           </h1>
-          <p className="text-ink-soft mt-4 text-[15px] leading-relaxed">
-            Campus Capital screens {scored.length || 10} major university markets using real federal enrollment data,
-            live demand momentum from the news cycle, and on-the-ground apartment supply — blended into a transparent
-            0–100 acquisition score.
+          <p className="text-ink-soft mt-5 text-[15px] md:text-base leading-relaxed max-w-2xl">
+            Campus Capital screens {scored.length || 100}+ major university markets entirely on free, public
+            data: federal enrollment, county demographics, fair-market rents, hazard & climate exposure,
+            on-the-ground apartment supply, and the live news cycle, all blended into a transparent 0–100
+            acquisition score.
           </p>
-          <div className="flex flex-wrap gap-3 mt-6">
+
+          <div className="flex flex-wrap gap-3 mt-7">
             <Link href="/map" className="px-5 h-11 inline-flex items-center rounded-full text-sm font-semibold text-white shadow-[var(--shadow)]"
               style={{ background: "var(--gold)" }}>
               Open the live map
             </Link>
-            <Link href="/top10" className="px-5 h-11 inline-flex items-center rounded-full text-sm font-semibold text-ink bg-surface-2 border border-line hover:border-line-strong">
-              Top 10 markets
+            <Link href="/markets" className="px-5 h-11 inline-flex items-center rounded-full text-sm font-semibold text-ink bg-surface-2 border border-line hover:border-line-strong transition-colors">
+              Browse all markets
             </Link>
+            <Link href="/about" className="px-5 h-11 inline-flex items-center rounded-full text-sm font-semibold text-ink-soft hover:text-ink transition-colors">
+              How it works →
+            </Link>
+          </div>
+
+          {/* live source chips */}
+          <div className="mt-8 pt-6 border-t border-line">
+            <div className="text-[10.5px] uppercase tracking-[1.4px] font-semibold text-muted-2 mb-3">
+              Powered by {SOURCE_CHIPS.length} live public APIs
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {SOURCE_CHIPS.map((s) => (
+                <span key={s} className="text-[11px] font-medium text-ink-soft bg-surface-2 border border-line rounded-full px-2.5 py-1">
+                  {s}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       </Card>
 
-      {/* KPIs */}
+      {/* ── KPIs ───────────────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Stat label="Markets tracked" value={loading ? "—" : String(scored.length)} delta={`${strongBuys} strong-buy signals`} tone="good" />
-        <Stat label="Avg acquisition score" value={loading ? "—" : String(avg)} delta="weighted composite" />
-        <Stat label="Live headlines (now)" value={loading ? "—" : fmtNum(headlines)} delta="across tracked markets" tone="info" />
-        <Stat label="Students in coverage" value={loading ? "—" : fmtNum(enrolled)} delta="College Scorecard" />
+        <Stat label="Markets tracked" value={loading ? "n/a" : String(scored.length)} delta={`${strongBuys} strong-buy signals`} tone="good" />
+        <Stat label="Avg acquisition score" value={loading ? "n/a" : String(avg)} delta="weighted composite" />
+        <Stat label="Live headlines (now)" value={loading ? "n/a" : fmtNum(headlines)} delta="across tracked markets" tone="info" />
+        <Stat label="Students in coverage" value={loading ? "n/a" : fmtNum(enrolled)} delta="College Scorecard" />
       </div>
 
-      {/* map + feed */}
+      {/* ── Map + feed ─────────────────────────────────────── */}
       <div className="grid grid-cols-1 xl:grid-cols-[1.6fr_1fr] gap-6">
         <Card pad={false} className="overflow-hidden">
           <div className="flex items-center justify-between p-5 pb-3">
@@ -127,7 +175,23 @@ export default function Home() {
         </Card>
       </div>
 
-      {/* ranked preview */}
+      {/* ── How it works ───────────────────────────────────── */}
+      <Card>
+        <SectionTitle sub="From raw public data to a single acquisition score" right={<Link href="/about" className="text-xs font-semibold text-gold-deep hover:underline">Full methodology →</Link>}>
+          How Campus Capital works
+        </SectionTitle>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {STEPS.map((s) => (
+            <div key={s.n} className="rounded-[var(--radius-card)] border border-line bg-surface-2 p-4">
+              <div className="font-display text-2xl font-semibold text-gold-deep/70">{s.n}</div>
+              <div className="text-sm font-semibold text-ink mt-2">{s.h}</div>
+              <div className="text-xs text-muted mt-1 leading-relaxed">{s.b}</div>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      {/* ── Ranked preview ─────────────────────────────────── */}
       {!loading && !error && (
         <Card>
           <SectionTitle sub="Ranked by live acquisition score" right={<Link href="/markets" className="text-xs font-semibold text-gold-deep hover:underline">All markets →</Link>}>
@@ -150,6 +214,19 @@ export default function Home() {
           </div>
         </Card>
       )}
+
+      {/* ── Footer note ────────────────────────────────────── */}
+      <Card className="flex items-center justify-between flex-wrap gap-3 bg-surface-2/60">
+        <div>
+          <div className="font-display font-semibold text-ink">A portfolio project</div>
+          <div className="text-sm text-muted max-w-xl mt-0.5">
+            Built to look and behave like a real commercial real-estate acquisitions desk. Every number is live or transparently modeled. Nothing here is investment advice.
+          </div>
+        </div>
+        <Link href="/about" className="px-5 h-10 inline-flex items-center rounded-full text-sm font-semibold text-white shrink-0" style={{ background: "var(--gold)" }}>
+          About this build
+        </Link>
+      </Card>
     </div>
   );
 }

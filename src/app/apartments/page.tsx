@@ -82,7 +82,7 @@ export default function ApartmentsPage() {
         >
           {filtered.map((m) => (
             <option key={m.market.id} value={m.market.id}>
-              {m.market.shortName} — {m.market.city}, {m.market.state}
+              {m.market.shortName} · {m.market.city}, {m.market.state}
               {m.market.enrollment ? ` · ${fmtNum(m.market.enrollment)} students` : ""}
             </option>
           ))}
@@ -143,7 +143,7 @@ export default function ApartmentsPage() {
                         <span className="font-medium text-ink">{apt.name}</span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-ink-soft">{apt.street ?? "—"}</td>
+                    <td className="px-4 py-3 text-ink-soft">{apt.street ?? "n/a"}</td>
                     <td className="px-4 py-3 text-right num text-ink-soft">{apt.distanceMi.toFixed(1)} mi</td>
                     <td className="px-4 py-3 text-right num text-ink">{fmtNum(apt.estUnits)}</td>
                     <td className="px-4 py-3 text-right num text-good font-medium">{fmtMoney(apt.estAnnualRevenue)}</td>
@@ -161,7 +161,7 @@ export default function ApartmentsPage() {
                           Search →
                         </a>
                       ) : (
-                        <span className="text-muted-2">—</span>
+                        <span className="text-muted-2">n/a</span>
                       )}
                     </td>
                   </tr>

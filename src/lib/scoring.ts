@@ -7,7 +7,7 @@ import type {
 
 const clamp = (n: number, lo = 0, hi = 100) => Math.max(lo, Math.min(hi, n));
 
-/** Default factor weights — adjustable in Settings (persisted to localStorage). */
+/** Default factor weights - adjustable in Settings (persisted to localStorage). */
 export const DEFAULT_WEIGHTS: Record<string, number> = {
   enrollmentGrowth: 0.22,
   selectivity: 0.2,
@@ -32,17 +32,21 @@ export const FACTOR_META: Record<
 };
 
 export function labelFor(score: number): OpportunityLabel {
-  if (score >= 71) return "Strong Buy Signal";
-  if (score >= 60) return "Watchlist";
-  if (score >= 48) return "Needs More Diligence";
+  if (score >= 80) return "Strong Buy Signal";
+  if (score >= 70) return "Buy Signal";
+  if (score >= 65) return "Watchlist";
+  if (score >= 60) return "Needs More Diligence";
+  if (score >= 50) return "Elevated Risk";
   return "Overpriced / Weak Demand";
 }
 
 export const LABEL_TONE: Record<OpportunityLabel, string> = {
-  "Strong Buy Signal": "good",
-  Watchlist: "warn",
-  "Needs More Diligence": "info",
-  "Overpriced / Weak Demand": "bad",
+  "Strong Buy Signal": "vivid", // 80+   bright green
+  "Buy Signal": "good", // 70-79 dark green
+  Watchlist: "info", // 65-69 blue
+  "Needs More Diligence": "orangeLight", // 60-64 light orange
+  "Elevated Risk": "orange", // 50-59 darker orange
+  "Overpriced / Weak Demand": "redBright", // <50   bright red
 };
 
 function factor(
@@ -85,8 +89,8 @@ export function scoreMarket(
     factor(
       "demandMomentum",
       weights.demandMomentum,
-      m.newsCount * 9,
-      `${m.newsCount} recent housing headlines`,
+      m.newsCount > 0 ? 20 + Math.sqrt(m.newsCount) * 13 : 12,
+      `${m.newsCount} headlines (last 90 days)`,
     ),
     factor(
       "rentGrowth",

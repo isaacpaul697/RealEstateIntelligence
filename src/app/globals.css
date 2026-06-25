@@ -3,7 +3,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ============================================================
-   Campus Capital — warm editorial theme
+   Campus Capital - warm editorial theme
    Paper canvas · ink type · brass accent · serif display headings.
    Soft shadows, rounded cards. Light + dark.
    ============================================================ */
@@ -27,14 +27,18 @@
   --gold-soft: #f0e6cf;
   --tan: #e7d9b6;
 
-  /* tones — warmed */
+  /* tones - warmed */
   --c-good: #3f7a4f;  --c-good-soft: #e6efe4;
   --c-warn: #b07a23;  --c-warn-soft: #f6ecd6;
   --c-risk: #b5552c;  --c-risk-soft: #f6e6d9;
   --c-bad:  #b23b2c;  --c-bad-soft:  #f6e1dc;
   --c-info: #3a6ea5;  --c-info-soft: #e2ebf3;
+  --c-vivid: #2f9e44; --c-vivid-soft: #e2f3e6;              /* bright green - top tier */
+  --c-orange-light: #f0a83d; --c-orange-light-soft: #fbeed6; /* light orange */
+  --c-orange: #d9760a; --c-orange-soft: #f8ead3;            /* darker orange */
+  --c-red-bright: #e0301e; --c-red-bright-soft: #fbdcd7;    /* bright red */
 
-  /* charts — editorial, accent-led */
+  /* charts - editorial, accent-led */
   --chart-1: #9a7b2e;
   --chart-2: #3a6ea5;
   --chart-3: #3f7a4f;
@@ -70,6 +74,10 @@
   --c-risk-soft: rgba(181,85,44,.18);
   --c-bad-soft:  rgba(178,59,44,.18);
   --c-info-soft: rgba(58,110,165,.18);
+  --c-vivid-soft: rgba(47,158,68,.20);
+  --c-orange-light-soft: rgba(240,168,61,.20);
+  --c-orange-soft: rgba(217,118,10,.20);
+  --c-red-bright-soft: rgba(224,48,30,.20);
 
   --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.45);
   --shadow-lg: 0 12px 36px rgba(0,0,0,.55);
@@ -99,6 +107,14 @@
   --color-bad-soft: var(--c-bad-soft);
   --color-info: var(--c-info);
   --color-info-soft: var(--c-info-soft);
+  --color-vivid: var(--c-vivid);
+  --color-vivid-soft: var(--c-vivid-soft);
+  --color-orange-light: var(--c-orange-light);
+  --color-orange-light-soft: var(--c-orange-light-soft);
+  --color-orange: var(--c-orange);
+  --color-orange-soft: var(--c-orange-soft);
+  --color-red-bright: var(--c-red-bright);
+  --color-red-bright-soft: var(--c-red-bright-soft);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -139,6 +155,14 @@ a, button { transition: color .15s ease, background-color .15s ease, border-colo
 .leaflet-popup-content { margin: 12px 14px; line-height: 1.5; }
 .leaflet-bar a, .leaflet-bar a:hover { background: var(--surface); color: var(--ink); border-color: var(--line); }
 .cc-logo-marker { background: none; border: none; }
+
+/* Pulsing radar halo for top-tier (80+) markets on the map */
+@keyframes cc-top-pulse {
+  0%   { transform: scale(1);   opacity: .55; }
+  70%  { transform: scale(2.1); opacity: 0; }
+  100% { transform: scale(2.1); opacity: 0; }
+}
+.cc-top-pulse { animation: cc-top-pulse 1.8s cubic-bezier(.25,.6,.3,1) infinite; transform-origin: center; }
 
 @keyframes ccfade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 .cc-fade { animation: ccfade .4s ease both; }

@@ -1,7 +1,7 @@
 import { UNIVERSITIES } from "../universities";
 
 /**
- * ESPN CDN athletic logos — verified team IDs for every D1 school in our list.
+ * ESPN CDN athletic logos - verified team IDs for every D1 school in our list.
  * Format: https://a.espncdn.com/i/teamlogos/ncaa/500/{id}.png
  * These return the recognisable athletic / brand mark (e.g. Wisconsin "W"),
  * not the university seal that Wikipedia's pageimages API often serves.
@@ -21,9 +21,15 @@ const ESPN_IDS: Record<string, number> = {
   michigan: 130,
   michiganstate: 127,
   minnesota: 135,
-  // stthomas — new D1, no stable ESPN entry yet
+  // stthomas - new D1, no stable ESPN entry yet
   missouri: 142,
   mostate: 2623,
+  slu: 139, // basketball (Billikens) - no FB
+  // casewestern - D3, no ESPN entry
+  ohiou: 195,
+  illinoisstate: 2287,
+  depaul: 305, // basketball (Blue Demons) - no FB
+  wichitastate: 2724, // basketball (Shockers) - no FB
   northdakota: 155,
   ndsu: 2449,
   nebraska: 158,
@@ -38,12 +44,16 @@ const ESPN_IDS: Record<string, number> = {
   // ── South ─────────────────────────────────────────────────────────────
   alabama: 333,
   auburn: 2,
+  alabamastate: 2011,
+  southalabama: 6,
   arkansas: 8,
   arkstate: 2032,
+  // ualr - basketball-only; no stable ESPN football mark
   florida: 57,
   fsu: 52,
   usf: 58,
   miami: 2390,
+  unf: 2454, // basketball (Ospreys) - no FB
   georgia: 61,
   gatech: 59,
   kentucky: 96,
@@ -55,6 +65,7 @@ const ESPN_IDS: Record<string, number> = {
   jacksonstate: 2296,
   unc: 153,
   ncstate: 152,
+  unccharlotte: 2429,
   oklahoma: 201,
   okstate: 197,
   southcarolina: 2579,
@@ -62,26 +73,35 @@ const ESPN_IDS: Record<string, number> = {
   coastalcarolina: 324,
   tennessee: 2633,
   vanderbilt: 238,
+  memphis: 235,
   texas: 251,
   tamu: 245,
   smu: 2567,
+  ttu: 2641,
+  houston: 248,
+  unt: 249,
+  utsa: 2636,
   virginia: 258,
   vatech: 259,
   wvu: 277,
   marshall: 276,
 
   // ── West ───────────────────────────────────────────────────────────────
-  // alaskafairbanks — no ESPN entry
-  // alaskaanchorage — no ESPN entry
+  // alaskafairbanks - no ESPN entry
+  // alaskaanchorage - no ESPN entry
   asu: 9,
   arizona: 12,
+  nau: 2464,
   ucla: 26,
   usc: 30,
   berkeley: 25,
+  sdsu_ca: 21,
+  ucsb: 2540, // basketball (Gauchos) - no FB
+  fresnostate: 278,
   colorado: 38,
   colostate: 36,
   hawaii: 62,
-  // hawaiipacific — no ESPN entry
+  // hawaiipacific - no ESPN entry
   boisestate: 68,
   idaho: 70,
   montana: 149,
@@ -108,19 +128,21 @@ const ESPN_IDS: Record<string, number> = {
   maryland: 120,
   towson: 119,
   maine: 311,
-  // usm — D3, no ESPN entry
+  // usm - D3, no ESPN entry
   newhampshire: 160,
   dartmouth: 159,
   rutgers: 164,
   princeton: 163,
   syracuse: 183,
   buffalo: 2084,
+  albany: 399,
+  cornell: 172,
   pennstate: 213,
   pitt: 221,
   uri: 227,
   brown: 225,
   vermont: 261,
-  // middlebury — D3, no ESPN entry
+  // middlebury - D3, no ESPN entry
 };
 
 function espnLogo(id: number): string {
@@ -129,7 +151,7 @@ function espnLogo(id: number): string {
 
 /**
  * Resolve logos for every campus via ESPN's CDN (athletic marks).
- * Schools without a known ESPN ID get null — markets.ts then falls back
+ * Schools without a known ESPN ID get null - markets.ts then falls back
  * to a Google favicon so every school has *something*.
  */
 export async function fetchLogos(): Promise<Map<string, string | null>> {

@@ -5,14 +5,28 @@ import { useState } from "react";
 import type { OpportunityLabel, Provenance } from "@/lib/types";
 import { LABEL_TONE } from "@/lib/scoring";
 
-export type Tone = "good" | "warn" | "risk" | "bad" | "info" | "gold";
+export type Tone =
+  | "vivid"
+  | "good"
+  | "warn"
+  | "risk"
+  | "bad"
+  | "info"
+  | "orangeLight"
+  | "orange"
+  | "redBright"
+  | "gold";
 
 const toneClass: Record<Tone, string> = {
+  vivid: "bg-vivid-soft text-vivid",
   good: "bg-good-soft text-good",
   warn: "bg-warn-soft text-warn",
   risk: "bg-risk-soft text-risk",
   bad: "bg-bad-soft text-bad",
   info: "bg-info-soft text-info",
+  orangeLight: "bg-orange-light-soft text-orange-light",
+  orange: "bg-orange-soft text-orange",
+  redBright: "bg-red-bright-soft text-red-bright",
   gold: "bg-gold-soft text-gold-deep",
 };
 
@@ -74,7 +88,7 @@ export function ProvenanceTag({ p }: { p: Provenance }) {
       className={`inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-md ${
         live ? "bg-good-soft text-good" : "bg-warn-soft text-warn"
       }`}
-      title={live ? "Pulled live from an external source" : "Modeled from live inputs — no free real-time feed exists"}
+      title={live ? "Pulled live from an external source" : "Modeled from live inputs; no free real-time feed exists"}
     >
       <span className={`w-1.5 h-1.5 rounded-full ${live ? "bg-good" : "bg-warn"}`} />
       {p}

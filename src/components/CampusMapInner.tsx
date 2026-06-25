@@ -10,25 +10,47 @@ import type { ScoredMarket } from "@/lib/compute";
 import { scoreTone } from "./charts";
 
 const TONE_HEX: Record<string, string> = {
+  vivid: "#2f9e44",
   good: "#3f7a4f",
   warn: "#b07a23",
   info: "#3a6ea5",
+  orangeLight: "#f0a83d",
+  orange: "#d9760a",
+  redBright: "#e0301e",
   bad: "#b23b2c",
 };
 
 function campusIcon(m: ScoredMarket, selected: boolean) {
   const tone = TONE_HEX[scoreTone(m.score.score)];
-  const size = selected ? 56 : 46;
+  const isTop = m.score.score >= 80; // Strong Buy - make it unmissable
+  const base = isTop ? 54 : 46;
+  const size = selected ? base + 10 : base;
   const inner =
     m.market.logo
       ? `<img src="${m.market.logo}" style="width:${size * 0.62}px;height:${size * 0.62}px;object-fit:contain" alt="" onerror="this.style.display='none'"/>`
       : `<span style="font-weight:700;color:#fff;font-size:${size * 0.3}px">${m.market.abbr}</span>`;
   const bg = m.market.logo ? "#fff" : m.market.brandColor;
+
+  const ring = isTop ? 5 : 3;
+  const glow = isTop ? `,0 0 18px ${tone},0 0 6px ${tone}` : "";
+  // Expanding radar halo behind the marker - only for top-tier markets
+  const pulse = isTop
+    ? `<div class="cc-top-pulse" style="position:absolute;inset:0;border-radius:9999px;background:${tone};z-index:1"></div>`
+    : "";
+  // Star badge pinned to the top of the marker
+  const star = isTop
+    ? `<div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:${tone};color:#fff;
+        width:22px;height:22px;border-radius:9999px;display:grid;place-items:center;font-size:13px;line-height:1;
+        box-shadow:0 0 0 2px #fffefb,0 1px 5px rgba(0,0,0,.4);z-index:4">★</div>`
+    : "";
+
   const html = `
     <div style="position:relative;width:${size}px;height:${size}px">
-      <div style="position:absolute;inset:0;border-radius:9999px;background:${bg};
-        display:grid;place-items:center;box-shadow:0 0 0 3px ${tone},0 4px 12px rgba(0,0,0,.25);overflow:hidden">${inner}</div>
-      <div style="position:absolute;bottom:-6px;right:-6px;background:${tone};color:#fff;font-size:11px;
+      ${pulse}
+      <div style="position:absolute;inset:0;border-radius:9999px;background:${bg};z-index:2;
+        display:grid;place-items:center;box-shadow:0 0 0 ${ring}px ${tone}${glow},0 4px 12px rgba(0,0,0,.25);overflow:hidden">${inner}</div>
+      ${star}
+      <div style="position:absolute;bottom:-6px;right:-6px;background:${tone};color:#fff;font-size:11px;z-index:4;
         font-weight:700;min-width:20px;height:20px;border-radius:9999px;display:grid;place-items:center;
         padding:0 4px;box-shadow:0 0 0 2px #fffefb">${m.score.score}</div>
     </div>`;
@@ -119,6 +141,7 @@ export default function CampusMapInner({
             key={m.market.id}
             position={[m.market.lat, m.market.lng]}
             icon={campusIcons.get(m.market.id)!}
+            zIndexOffset={m.score.score >= 80 ? 1000 : 0}
             eventHandlers={{ click: () => setSelected(m.market.id) }}
           >
             <Popup>

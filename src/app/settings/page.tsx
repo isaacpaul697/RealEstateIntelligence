@@ -16,7 +16,7 @@ export default function SettingsPage() {
       </div>
 
       <Card className="mb-6">
-        <SectionTitle sub={`Weights total ${(total * 100).toFixed(0)}% — scores normalize automatically`}
+        <SectionTitle sub={`Weights total ${(total * 100).toFixed(0)}%, scores normalize automatically`}
           right={<button onClick={resetWeights} className="text-xs font-semibold hover:underline" style={{ color: "var(--gold-deep)" }}>Reset defaults</button>}>
           Scoring model weights
         </SectionTitle>
@@ -33,23 +33,23 @@ export default function SettingsPage() {
       </Card>
 
       <Card className="mb-6">
-        <SectionTitle sub="All data is live — no mock fallback">Data sources</SectionTitle>
+        <SectionTitle sub="All data is live, no mock fallback">Data sources</SectionTitle>
         <div className="text-sm text-ink-soft space-y-1.5">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-good" />
-            <span><strong className="text-ink">College Scorecard</strong> — enrollment, acceptance rate, growth</span>
+            <span><strong className="text-ink">College Scorecard</strong>: enrollment, acceptance rate, growth</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-good" />
-            <span><strong className="text-ink">Google News RSS</strong> — demand signal headlines</span>
+            <span><strong className="text-ink">Google News RSS</strong>: demand signal headlines</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-good" />
-            <span><strong className="text-ink">OpenStreetMap</strong> — apartment buildings near campus</span>
+            <span><strong className="text-ink">OpenStreetMap</strong>: apartment buildings near campus</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-good" />
-            <span><strong className="text-ink">Wikipedia</strong> — university logos and seals</span>
+            <span><strong className="text-ink">Wikipedia</strong>: university logos and seals</span>
           </div>
         </div>
       </Card>

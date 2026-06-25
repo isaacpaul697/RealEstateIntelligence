@@ -27,7 +27,7 @@ function readCache(): Record<string, Apartment[]> | null {
 function writeCache(data: Record<string, Apartment[]>) {
   try {
     sessionStorage.setItem(CACHE_KEY, JSON.stringify({ data, ts: Date.now() }));
-  } catch { /* quota exceeded — try removing old per-school caches to make room */
+  } catch { /* quota exceeded - try removing old per-school caches to make room */
     try {
       for (let i = sessionStorage.length - 1; i >= 0; i--) {
         const k = sessionStorage.key(i);

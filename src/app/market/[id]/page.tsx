@@ -14,6 +14,16 @@ import { useWatchlist } from "@/lib/watchlist";
 import ApartmentDrawer from "@/components/ApartmentDrawer";
 import type { Apartment } from "@/lib/types";
 
+function MiniFact({ label, value, note }: { label: string; value: string; note: string }) {
+  return (
+    <div className="rounded-[var(--radius-card)] border border-line bg-surface-2 px-3 py-2">
+      <div className="text-[10px] uppercase tracking-wide text-muted-2 font-semibold">{label}</div>
+      <div className="text-sm font-semibold text-ink num mt-0.5">{value}</div>
+      <div className="text-[10px] text-muted-2 mt-0.5">{note}</div>
+    </div>
+  );
+}
+
 export default function MarketDetail() {
   const { id } = useParams<{ id: string }>();
   const { sm, loading, error } = useScoredMarket(id);
@@ -29,10 +39,14 @@ export default function MarketDetail() {
   const recommendation =
     sm.score.label === "Strong Buy Signal"
       ? "Advance to underwriting. Fundamentals support an aggressive acquisition posture."
+      : sm.score.label === "Buy Signal"
+      ? "Strong candidate. Advance to underwriting with standard diligence."
       : sm.score.label === "Watchlist"
       ? "Hold on a watchlist. Monitor rent and occupancy for an entry point."
       : sm.score.label === "Needs More Diligence"
       ? "Gather additional diligence before committing capital."
+      : sm.score.label === "Elevated Risk"
+      ? "Elevated risk. Pursue only with a clear value-add thesis and pricing discount."
       : "Pass for now. Demand and pricing do not support entry.";
 
   return (
@@ -53,11 +67,77 @@ export default function MarketDetail() {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <Stat label="Enrollment" value={m.enrollment != null ? fmtNum(m.enrollment) : "—"} delta={m.enrollmentGrowth != null ? `+${fmtPct(m.enrollmentGrowth)} / yr` : undefined} tone="good" />
-        <Stat label="Acceptance rate" value={m.acceptanceRate != null ? `${m.acceptanceRate.toFixed(0)}%` : "—"} delta="College Scorecard" />
-        <Stat label="Est. rent growth" value={`+${fmtPct(m.estRentGrowth)}`} delta="modeled from enrollment + selectivity" tone="warn" />
+        <Stat label="Enrollment" value={m.enrollment != null ? fmtNum(m.enrollment) : "n/a"} delta={m.enrollmentGrowth != null ? `+${fmtPct(m.enrollmentGrowth)} / yr` : undefined} tone="good" />
+        <Stat label="Acceptance rate" value={m.acceptanceRate != null ? `${m.acceptanceRate.toFixed(0)}%` : "n/a"} delta="College Scorecard" />
+        <Stat label="Retention rate" value={m.retentionRate != null ? `${m.retentionRate.toFixed(0)}%` : "n/a"} delta="4-yr full-time" tone="good" />
         <Stat label="Housing headlines" value={String(m.newsCount)} delta="recent Google News" tone="info" />
       </div>
+
+      {/* Census + BLS + FRED macro data */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+        <Stat label="Median rent" value={m.medianRent != null ? `$${fmtNum(m.medianRent)}/mo` : "n/a"} delta="Census ACS" />
+        <Stat label="County population" value={m.countyPopulation != null ? fmtNum(m.countyPopulation) : "n/a"} delta="Census ACS" />
+        <Stat label="Renter %" value={m.renterPct != null ? `${m.renterPct.toFixed(1)}%` : "n/a"} delta="Census ACS" tone={m.renterPct != null && m.renterPct > 50 ? "good" : undefined} />
+        <Stat label="Unemployment" value={m.unemploymentRate != null ? `${m.unemploymentRate.toFixed(1)}%` : "n/a"} delta="BLS LAUS" tone={m.unemploymentRate != null && m.unemploymentRate < 4 ? "good" : m.unemploymentRate != null && m.unemploymentRate > 6 ? "bad" : undefined} />
+        <Stat label="30-yr mortgage" value={m.mortgageRate != null ? `${m.mortgageRate.toFixed(2)}%` : "n/a"} delta="FRED" />
+      </div>
+
+      {/* Room & board + income context */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+        <Stat label="Room & board (on)" value={m.roomBoardOnCampus != null ? `$${fmtNum(m.roomBoardOnCampus)}/yr` : "n/a"} delta="College Scorecard" />
+        <Stat label="Room & board (off)" value={m.roomBoardOffCampus != null ? `$${fmtNum(m.roomBoardOffCampus)}/yr` : "n/a"} delta="College Scorecard" />
+        <Stat label="Median income" value={m.medianIncome != null ? `$${fmtNum(m.medianIncome)}` : "n/a"} delta="Census ACS" />
+        <Stat label="Fair market rent (2BR)" value={m.fmrTwoBed != null ? `$${fmtNum(m.fmrTwoBed)}/mo` : "n/a"} delta={m.fmrYear ? `HUD FMR ${m.fmrYear}` : "HUD FMR"} tone="good" />
+        <Stat
+          label="Hazard risk"
+          value={m.hazardRiskRating ?? "n/a"}
+          delta="FEMA NRI"
+          tone={
+            m.hazardRiskScore != null && m.hazardRiskScore >= 90 ? "bad" :
+            m.hazardRiskScore != null && m.hazardRiskScore <= 70 ? "good" : undefined
+          }
+        />
+      </div>
+
+      {/* Campus context - Wikipedia photo & blurb + Open-Meteo climate + USGS seismic */}
+      {(m.wikiSummary || m.wikiThumb || m.climateAvgTempF != null) && (
+        <Card className="mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-5">
+            {m.wikiThumb ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={m.wikiThumb}
+                alt={`${m.shortName} campus`}
+                className="w-full h-44 md:h-full object-cover rounded-[var(--radius-card)] border border-line"
+              />
+            ) : (
+              <div className="w-full h-44 md:h-full rounded-[var(--radius-card)] border border-line grid place-items-center bg-surface-2">
+                <Logo src={m.logo} abbr={m.abbr} color={m.brandColor} size={64} />
+              </div>
+            )}
+            <div className="min-w-0">
+              <SectionTitle sub="Wikipedia" right={<ProvenanceTag p="live" />}>About {m.shortName}</SectionTitle>
+              {m.wikiSummary ? (
+                <p className="text-sm text-ink-soft leading-relaxed">{m.wikiSummary}</p>
+              ) : (
+                <p className="text-sm text-muted">No encyclopedic summary available.</p>
+              )}
+              {m.wikiUrl && (
+                <a href={m.wikiUrl} target="_blank" rel="noopener noreferrer"
+                  className="inline-block mt-2 text-xs font-semibold text-gold-deep hover:underline">
+                  Read on Wikipedia →
+                </a>
+              )}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
+                <MiniFact label="Avg temp" value={m.climateAvgTempF != null ? `${m.climateAvgTempF}°F` : "n/a"} note="Open-Meteo" />
+                <MiniFact label="Sunshine" value={m.climateSunHours != null ? `${fmtNum(m.climateSunHours)} hrs/yr` : "n/a"} note="Open-Meteo" />
+                <MiniFact label="Precip" value={m.climatePrecipIn != null ? `${m.climatePrecipIn}" /yr` : "n/a"} note="Open-Meteo" />
+                <MiniFact label="Quakes M3+" value={m.quakeCount != null ? String(m.quakeCount) : "n/a"} note="USGS · 100km/25yr" />
+              </div>
+            </div>
+          </div>
+        </Card>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="flex flex-col items-center">
@@ -135,7 +215,7 @@ export default function MarketDetail() {
         )}
       </Card>
 
-      {/* Nearby apartments — clickable */}
+      {/* Nearby apartments - clickable */}
       <Card className="mt-6">
         <SectionTitle
           sub={detailLoading ? "Loading…" : `${apartments.length} found near campus · click any to dive deeper`}

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogoMark } from "./LogoMark";
+import { IntegrationsPanel } from "./IntegrationsPanel";
 
 const GROUPS: { label: string; items: { href: string; name: string; icon: string }[] }[] = [
   {
@@ -25,6 +26,7 @@ const GROUPS: { label: string; items: { href: string; name: string; icon: string
     label: "Diligence",
     items: [
       { href: "/scorecard", name: "Acquisition Scorecard", icon: "M7 3h10l3 4v14H4V7l3-4Zm1 9 2.5 2.5L16 9" },
+      { href: "/notes", name: "Diligence Notes", icon: "M5 3h11l3 3v15H5V3Zm3 6h8M8 13h8M8 17h5" },
       { href: "/watchlist", name: "Saved Apartments", icon: "M5 5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16l-7-3.5L5 21V5Z" },
     ],
   },
@@ -84,14 +86,8 @@ export function Sidebar() {
         ))}
       </nav>
 
-      <div className="px-5 pt-4 pb-5 border-t border-line">
-        <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10.5px] font-semibold bg-good-soft text-good">
-          <span className="w-1.5 h-1.5 rounded-full bg-good animate-pulse" />
-          Live data
-        </span>
-        <div className="text-[10.5px] mt-2 leading-snug text-muted">
-          Scorecard · Google News · OpenStreetMap
-        </div>
+      <div className="px-3 pt-3 pb-4 border-t border-line">
+        <IntegrationsPanel />
       </div>
     </aside>
   );

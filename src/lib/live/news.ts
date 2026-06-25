@@ -42,11 +42,16 @@ export async function fetchNews(query: string, limit = 10): Promise<Article[]> {
       const sourceTag = tag(block, "source");
       let title = rawTitle;
       let source = sourceTag ?? "";
-      if (!source) {
-        const idx = rawTitle.lastIndexOf(" - ");
-        if (idx > 0) {
+      // Google News formats titles as "Headline - Source". Strip the trailing
+      // source so it isn't duplicated next to the dedicated source line.
+      const idx = rawTitle.lastIndexOf(" - ");
+      if (idx > 0) {
+        const tail = rawTitle.slice(idx + 3);
+        if (source) {
+          if (tail === source) title = rawTitle.slice(0, idx);
+        } else {
           title = rawTitle.slice(0, idx);
-          source = rawTitle.slice(idx + 3);
+          source = tail;
         }
       }
       if (!title || !link) continue;
