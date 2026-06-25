@@ -4,6 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogoMark } from "./LogoMark";
 import { IntegrationsPanel } from "./IntegrationsPanel";
+import { CITIES } from "@/lib/dev/cities";
+
+const PIN = "M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12Zm0-9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z";
 
 type Section = "housing" | "development";
 type Item = { href: string; name: string; icon: string; exact?: boolean };
@@ -50,6 +53,14 @@ const DEV_GROUPS: Group[] = [
       { href: "/development", name: "National Overview", icon: "M3 11.5 12 4l9 7.5M5 10v10h14V10", exact: true },
       { href: "/development/area", name: "Area Search", icon: "M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm10 2-4.3-4.3" },
     ],
+  },
+  {
+    label: "Live permit cities",
+    items: CITIES.filter((c) => c.socrata).map((c) => ({
+      href: `/development/city/${c.id}`,
+      name: `${c.name}, ${c.state}`,
+      icon: PIN,
+    })),
   },
   {
     label: "Reference",

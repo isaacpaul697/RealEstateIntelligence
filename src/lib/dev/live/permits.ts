@@ -159,9 +159,9 @@ function mapRecord(cityId: string, r: Raw, idx: number): Development | null {
     city: cityId,
     permitNumber,
     type,
-    rawType: rawType || "—",
+    rawType: rawType || "n/a",
     description,
-    address: composeAddress(r) ?? "—",
+    address: composeAddress(r) ?? "n/a",
     lat: geo.lat,
     lng: geo.lng,
     // Many portals carry 0/1 placeholders in their valuation column; treat

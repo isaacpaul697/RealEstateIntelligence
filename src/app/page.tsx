@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { LogoMark } from "@/components/LogoMark";
+import { HubHero } from "@/components/HubHero";
 import { useSettings } from "@/lib/settings";
 
 const SECTIONS = [
@@ -9,7 +10,7 @@ const SECTIONS = [
     href: "/student-housing",
     eyebrow: "Acquisitions IQ",
     title: "Student Housing",
-    desc: "Screen university markets on live demand, supply, and rent signals — with a transparent 0–100 acquisition score, apartment-level diligence, and a print-ready scorecard.",
+    desc: "Screen university markets on live demand, supply, and rent signals, with a transparent 0 to 100 acquisition score, apartment-level diligence, and a print-ready scorecard.",
     points: ["University market screening", "On-the-ground apartment supply", "Acquisition scorecard & watchlist"],
     icon: (
       <svg viewBox="0 0 32 32" width={26} height={26} fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -22,7 +23,7 @@ const SECTIONS = [
     href: "/development",
     eyebrow: "Development Intelligence",
     title: "Development",
-    desc: "Explore recent construction by city from live permit data — supply-gap recommendations, development economics, and developer portfolio profiles, all from free public sources.",
+    desc: "Explore recent construction by city from live permit data: supply-gap recommendations, development economics, and developer portfolio profiles, all from free public sources.",
     points: ["National permit activity & trends", "City explorer with supply-gap model", "Developer leaderboards & profiles"],
     icon: (
       <svg viewBox="0 0 24 24" width={24} height={24} fill="none" stroke="white" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
@@ -59,14 +60,19 @@ export default function Hub() {
       </header>
 
       <main className="flex-1 w-full max-w-[1080px] mx-auto px-6 md:px-10 py-14 md:py-20">
-        <div className="max-w-[640px]">
-          <div className="text-[12px] font-semibold uppercase tracking-[1.6px] text-gold-deep">Real Estate Intelligence</div>
-          <h1 className="font-display text-[34px] md:text-[44px] leading-[1.08] font-semibold text-ink mt-3">
-            One workspace for the deals you buy and the supply you watch.
-          </h1>
-          <p className="text-[15px] text-ink-soft mt-4 leading-relaxed">
-            Two intelligence suites, one source of truth — every number traces to live public data. Pick a workspace to begin.
-          </p>
+        <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,440px)] gap-10 lg:gap-14 items-center">
+          <div className="max-w-[640px]">
+            <div className="text-[12px] font-semibold uppercase tracking-[1.6px] text-gold-deep">Real Estate Intelligence</div>
+            <h1 className="font-display text-[34px] md:text-[44px] leading-[1.08] font-semibold text-ink mt-3">
+              One workspace for the deals you buy and the supply you watch.
+            </h1>
+            <p className="text-[15px] text-ink-soft mt-4 leading-relaxed">
+              Two intelligence suites, one source of truth. Every number traces to live public data. Pick a workspace to begin.
+            </p>
+          </div>
+          <div className="hidden md:block">
+            <HubHero />
+          </div>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6 mt-12">

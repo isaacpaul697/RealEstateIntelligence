@@ -106,7 +106,7 @@ export function economics(dev: Development, costMultiplier: number): DevEconomic
 export const METHODOLOGY: { metric: string; provenance: "live" | "estimated"; formula: string; source: string }[] = [
   { metric: "Declared development value", provenance: "live", formula: "As reported on the building permit", source: "City open-data portal (Socrata)" },
   { metric: "Development cost (no declared value)", provenance: "estimated", formula: "sqft × base $/sqft(type) × city cost factor × FRED cost multiplier; or units × $/unit when sqft absent", source: "Permit sqft/units + RSMeans-style base + FRED WPUSI012011" },
-  { metric: "Land cost", provenance: "estimated", formula: "development cost × city land-share assumption (20–45% urban infill)", source: "Modeled — no free national land-price feed" },
+  { metric: "Land cost", provenance: "estimated", formula: "development cost × city land-share assumption (20–45% urban infill)", source: "Modeled; no free national land-price feed" },
   { metric: "Development duration", provenance: "live", formula: "completion/CO date − issue date", source: "City open-data portal" },
   { metric: "Development duration (no dates)", provenance: "estimated", formula: "typical months-by-type × 30 days", source: "Modeled industry-typical durations" },
   { metric: "Construction cost multiplier", provenance: "live", formula: "latest PPI / Jan-2019 PPI", source: "FRED series WPUSI012011" },

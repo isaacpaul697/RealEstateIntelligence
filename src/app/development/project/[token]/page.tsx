@@ -109,7 +109,7 @@ export default async function DevelopmentPage({ params }: { params: Promise<{ to
         </div>
         <div className="flex flex-col gap-4">
           <Card className="flex flex-col gap-2.5">
-            <SectionTitle sub="Permit-derived — not a legal title record">Developer / owner</SectionTitle>
+            <SectionTitle sub="Permit-derived, not a legal title record">Developer / owner</SectionTitle>
             {view.developer ? (
               developerCity ? (
                 <Link

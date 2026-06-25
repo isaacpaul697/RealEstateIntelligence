@@ -19,7 +19,7 @@ function pin(type: keyof typeof TYPE_COLOR, big: boolean) {
 /** External web search for a development — its address + city, plus the
  *  developer/firm when known (which surfaces the company's own site). */
 function searchUrl(d: DevView, cityLabel?: string): string {
-  const q = [d.address !== "—" ? d.address : null, cityLabel, d.developer]
+  const q = [d.address !== "n/a" ? d.address : null, cityLabel, d.developer]
     .filter(Boolean)
     .join(" ");
   return `https://www.google.com/search?q=${encodeURIComponent(q)}`;

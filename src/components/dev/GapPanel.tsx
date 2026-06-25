@@ -58,7 +58,7 @@ export function GapPanel({ gap }: { gap: GapResult }) {
           <div className="mt-4 pt-3 border-t border-line text-[11px] text-muted-2">
             Inputs: {gap.inputs.permitCount.toLocaleString()} permits ·{" "}
             {gap.inputs.demand.available
-              ? `ACS pop ${gap.inputs.demand.population?.toLocaleString() ?? "—"}, ${gap.inputs.demand.vacancyPct?.toFixed(1) ?? "—"}% vacancy`
+              ? `ACS pop ${gap.inputs.demand.population?.toLocaleString() ?? "n/a"}, ${gap.inputs.demand.vacancyPct?.toFixed(1) ?? "n/a"}% vacancy`
               : "ACS unavailable"}{" "}
             · {gap.inputs.landUse.available ? `${gap.inputs.landUse.total} OSM land-use features` : "OSM unavailable"}
           </div>

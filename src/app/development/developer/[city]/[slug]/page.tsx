@@ -54,7 +54,7 @@ export default async function DeveloperPage({ params }: { params: Promise<{ city
           <Link href={`/development/city/${cityId}`} className="text-xs text-muted hover:text-ink">← {bundle.city.name} developers</Link>
           <h1 className="font-display text-[28px] font-semibold text-ink leading-tight tracking-tight mt-0.5">{name}</h1>
           <p className="text-xs text-muted-2 mt-1">
-            Permit-derived activity in {bundle.city.name}, {bundle.city.state} — not a legal title/ownership record.
+            Permit-derived activity in {bundle.city.name}, {bundle.city.state}, not a legal title/ownership record.
           </p>
         </div>
       </section>
@@ -74,7 +74,7 @@ export default async function DeveloperPage({ params }: { params: Promise<{ city
         <Stat label="Projects" value={fmtNum(matches.length)} provenance="live" sub="recent permits" />
         <Stat label="Units" value={fmtNum(totalUnits)} provenance="live" sub="where reported" />
         <Stat label="Est. portfolio value" value={fmtCompactUSD(totalValue)} provenance="estimated" sub="declared + modeled" />
-        <Stat label="Active window" value={dates.length ? `${fmtDate(dates[0]).split(",")[0]}` : "—"} provenance="live" sub={dates.length ? `→ ${fmtDate(dates[dates.length - 1])}` : undefined} />
+        <Stat label="Active window" value={dates.length ? `${fmtDate(dates[0]).split(",")[0]}` : "n/a"} provenance="live" sub={dates.length ? `→ ${fmtDate(dates[dates.length - 1])}` : undefined} />
       </section>
 
       <section className="grid lg:grid-cols-3 gap-4">

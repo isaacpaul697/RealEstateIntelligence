@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getCityBundle } from "@/lib/dev/bundle";
 import { CityView } from "@/components/dev/CityView";
+import { CityNews } from "@/components/dev/CityNews";
+import { fetchNews, developmentQuery } from "@/lib/live/news";
 import { fmtNum } from "@/lib/dev/format";
 
 export const revalidate = 43200;
@@ -13,6 +15,7 @@ export default async function CityPage({ params }: { params: Promise<{ id: strin
 
   const { city, ok, developments, mode } = bundle;
   const osm = mode === "osm";
+  const news = await fetchNews(developmentQuery(city.name, city.state), 8);
 
   return (
     <div className="flex flex-col gap-7">
@@ -31,6 +34,8 @@ export default async function CityPage({ params }: { params: Promise<{ id: strin
       </section>
 
       <CityView bundle={bundle} />
+
+      <CityNews articles={news} city={`${city.name}, ${city.state}`} />
     </div>
   );
 }

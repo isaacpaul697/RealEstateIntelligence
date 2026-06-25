@@ -7,7 +7,7 @@ export const metadata = { title: "Methodology · Real-Estate Development Intelli
 const SOURCES = [
   { name: "Census Building Permits Survey (BPS)", use: "National/state new-construction permits by structure type + trend", key: "Keyless CSV", url: "https://www.census.gov/construction/bps/" },
   { name: "City open-data portals (Socrata SODA)", use: "Detailed permit records: type, valuation, dates, developer, geo", key: "Keyless (optional app token)", url: "https://dev.socrata.com/" },
-  { name: "Census ACS 5-year", use: "Population, households, vacancy, tenure, income, growth — demand side", key: "Free key (CENSUS_API_KEY)", url: "https://www.census.gov/data/developers/data-sets/acs-5year.html" },
+  { name: "Census ACS 5-year", use: "Population, households, vacancy, tenure, income, growth (demand side)", key: "Free key (CENSUS_API_KEY)", url: "https://www.census.gov/data/developers/data-sets/acs-5year.html" },
   { name: "OpenStreetMap Overpass", use: "Building footprints as mapped developments for cities without a portal, plus land-use mix for area context + gap baseline", key: "Keyless", url: "https://overpass-api.de/" },
   { name: "OpenStreetMap Nominatim", use: "Geocode a typed city/area to a center + bounding box", key: "Keyless (UA required)", url: "https://nominatim.org/" },
   { name: "Census Geocoder", use: "Resolve any geocoded point to its county FIPS so ACS demand works for every city", key: "Keyless", url: "https://geocoding.geo.census.gov/" },
@@ -22,7 +22,7 @@ export default function MethodologyPage() {
         <h1 className="font-display text-[30px] font-semibold text-ink tracking-tight">Methodology &amp; data sources</h1>
         <p className="text-[15px] text-ink-soft mt-2 max-w-2xl">
           Every number on this site is either pulled <strong className="text-good">live</strong> from a free
-          public source, or <strong className="text-warn">estimated</strong> — modeled from live inputs with the
+          public source, or <strong className="text-warn">estimated</strong>, modeled from live inputs with the
           formula shown below. Nothing is hardcoded, seeded, or invented. When a source is unavailable, the
           affected view degrades with a clear message rather than substituting fake data.
         </p>
@@ -53,7 +53,7 @@ export default function MethodologyPage() {
       </section>
 
       <section>
-        <SectionTitle sub="All free — keyless or free-tier key from an env var">Data sources</SectionTitle>
+        <SectionTitle sub="All free: keyless or free-tier key from an env var">Data sources</SectionTitle>
         <div className="grid md:grid-cols-2 gap-3">
           {SOURCES.map((s) => (
             <Card key={s.name} className="flex flex-col gap-1">
@@ -70,7 +70,7 @@ export default function MethodologyPage() {
       </section>
 
       <section>
-        <SectionTitle sub="Cities with live detailed permit portals — more can be added to the registry easily">
+        <SectionTitle sub="Cities with live detailed permit portals; more can be added to the registry easily">
           Supported cities
         </SectionTitle>
         <div className="flex flex-wrap gap-2">
@@ -84,7 +84,7 @@ export default function MethodologyPage() {
           {CITIES.filter((c) => !c.socrata).length}+ more cities are listed on the home page and any other city you
           search is still mapped: developments are drawn from OpenStreetMap building footprints, classified by type,
           with economics modeled from footprint geometry (badged estimated) and ACS demand resolved via the Census
-          Geocoder — with a clear note that real permit valuations and developer names aren&apos;t available there.
+          Geocoder, with a clear note that real permit valuations and developer names aren&apos;t available there.
         </p>
       </section>
     </div>

@@ -15,7 +15,7 @@ const fraunces = Fraunces({
 export const metadata: Metadata = {
   title: "Real Estate Intelligence",
   description:
-    "Real Estate Intelligence — live student-housing acquisitions screening and real-estate development intelligence in one workspace.",
+    "Real Estate Intelligence: live student-housing acquisitions screening and real-estate development intelligence in one workspace.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

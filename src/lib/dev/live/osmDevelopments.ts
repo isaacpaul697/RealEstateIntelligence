@@ -152,7 +152,7 @@ function mapElement(el: OsmEl, citySlug: string): Development | null {
     type,
     rawType: tags.building || tags.landuse || "building",
     description: name || TYPE_LABEL_SHORT[type],
-    address: composeAddress(tags) ?? name ?? "—",
+    address: composeAddress(tags) ?? name ?? "n/a",
     lat,
     lng,
     declaredValue: null, // OSM carries no valuation — cost is modeled, badged estimated

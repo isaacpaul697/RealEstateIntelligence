@@ -167,6 +167,37 @@ a, button { transition: color .15s ease, background-color .15s ease, border-colo
 @keyframes ccfade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 .cc-fade { animation: ccfade .4s ease both; }
 
+/* ---- Hub hero: a skyline that builds itself ---- */
+@keyframes cc-build {
+  0%   { transform: scaleY(0);   opacity: 0; }
+  60%  { opacity: 1; }
+  100% { transform: scaleY(1);   opacity: 1; }
+}
+@keyframes cc-lite {
+  0%, 100% { opacity: .25; }
+  50%      { opacity: 1; }
+}
+@keyframes cc-draw  { to { stroke-dashoffset: 0; } }
+@keyframes cc-crane { 0%,100% { transform: rotate(-2.2deg); } 50% { transform: rotate(2.2deg); } }
+@keyframes cc-hook  { 0%,100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
+@keyframes cc-pop   { 0% { transform: scale(0); opacity: 0; } 70% { transform: scale(1.35); } 100% { transform: scale(1); opacity: 1; } }
+
+.cc-hero-build  { transform-origin: 50% 100%; animation: cc-build 1.1s cubic-bezier(.22,.8,.3,1) both; }
+.cc-hero-lite   { animation: cc-lite 3.2s ease-in-out infinite; }
+.cc-hero-trend  { stroke-dasharray: 160; stroke-dashoffset: 160; animation: cc-draw 1.4s ease .9s both; }
+.cc-hero-crane  { transform-origin: 50% 0; animation: cc-crane 4.5s ease-in-out 1.4s infinite; }
+.cc-hero-hook   { animation: cc-hook 4.5s ease-in-out 1.4s infinite; }
+.cc-hero-node   { transform-origin: center; animation: cc-pop .5s cubic-bezier(.3,1.4,.5,1) 2.2s both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cc-hero-build, .cc-hero-lite, .cc-hero-trend, .cc-hero-crane, .cc-hero-hook, .cc-hero-node {
+    animation: none !important;
+    transform: none !important;
+    stroke-dashoffset: 0 !important;
+    opacity: 1 !important;
+  }
+}
+
 @media print {
   .no-print { display: none !important; }
   body { background: #fff; }

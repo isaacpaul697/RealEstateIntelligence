@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { getAreaBundle } from "@/lib/dev/area";
 import { CITIES } from "@/lib/dev/cities";
 import { CityView } from "@/components/dev/CityView";
+import { CityNews } from "@/components/dev/CityNews";
+import { fetchNews, developmentQuery } from "@/lib/live/news";
 import { StateBlock } from "@/components/dev/ui";
 
 export const revalidate = 43200;
@@ -23,7 +25,9 @@ export default async function AreaPage({ searchParams }: { searchParams: Promise
     return <StateBlock title={`Couldn't locate “${q}”`} note="Try a more specific city or area name." />;
   }
 
-  const shortName = place.displayName.split(",").slice(0, 2).join(", ");
+  const parts = place.displayName.split(",").map((s) => s.trim());
+  const shortName = parts.slice(0, 2).join(", ");
+  const news = await fetchNews(developmentQuery(parts[0] ?? q, parts[1] ?? ""), 8);
 
   return (
     <div className="flex flex-col gap-7">
@@ -38,12 +42,14 @@ export default async function AreaPage({ searchParams }: { searchParams: Promise
         <p className="text-xs text-muted-2 mt-2 max-w-2xl">
           This area has no connected open-data permit portal, so developments are drawn from OpenStreetMap building
           footprints. Values and durations are <strong className="text-warn">modeled</strong> from footprint geometry
-          and building type (badged estimated) — never invented. Permit dates and developer names aren&apos;t available
+          and building type (badged estimated), never invented. Permit dates and developer names aren&apos;t available
           here.
         </p>
       </section>
 
       <CityView bundle={bundle} />
+
+      <CityNews articles={news} city={shortName} />
     </div>
   );
 }

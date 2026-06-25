@@ -96,10 +96,10 @@ export default function ApartmentDrawer({
   const displayedArticles = articles.slice(0, 8);
 
   return (
-    <>
+    <div className="fixed inset-0 z-30 overflow-hidden pointer-events-none">
       {/* Backdrop */}
       <div
-        className={`fixed inset-0 z-30 bg-ink/30 backdrop-blur-[2px] transition-opacity duration-300 ${
+        className={`absolute inset-0 bg-ink/30 backdrop-blur-[2px] transition-opacity duration-300 ${
           open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
         onClick={onClose}
@@ -108,8 +108,8 @@ export default function ApartmentDrawer({
 
       {/* Drawer panel */}
       <aside
-        className={`fixed top-0 right-0 bottom-0 z-30 w-full sm:w-[420px] bg-surface border-l border-line flex flex-col transition-transform duration-300 ease-out ${
-          open ? "translate-x-0 shadow-[var(--shadow-lg)]" : "translate-x-full shadow-none pointer-events-none"
+        className={`absolute top-0 right-0 bottom-0 w-full sm:w-[420px] bg-surface border-l border-line flex flex-col transition-transform duration-300 ease-out ${
+          open ? "translate-x-0 shadow-[var(--shadow-lg)] pointer-events-auto" : "translate-x-full shadow-none pointer-events-none"
         }`}
         role="dialog"
         aria-label={apartment ? `Details for ${apartment.name}` : "Apartment detail drawer"}
@@ -253,6 +253,6 @@ export default function ApartmentDrawer({
           </>
         )}
       </aside>
-    </>
+    </div>
   );
 }

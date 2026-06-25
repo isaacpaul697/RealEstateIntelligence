@@ -70,3 +70,6 @@ export async function fetchNews(query: string, limit = 10): Promise<Article[]> {
 
 export const housingQuery = (school: string) =>
   `"${school}" (student housing OR apartments OR enrollment OR off-campus)`;
+
+export const developmentQuery = (city: string, state: string) =>
+  `"${city}" ${state} (new construction OR development OR apartments OR "building permit" OR groundbreaking OR "real estate")`;
