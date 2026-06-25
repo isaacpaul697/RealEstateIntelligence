@@ -32,7 +32,7 @@ export default function Top10Page() {
 
       <div className="flex flex-col gap-3">
         {top.map((m, i) => (
-          <Link key={m.market.id} href={`/market/${m.market.id}`}>
+          <Link key={m.market.id} href={`/student-housing/market/${m.market.id}`}>
             <Card className="flex items-center gap-5 hover:shadow-[var(--shadow-lg)] hover:-translate-y-0.5 transition-all">
               <div className="font-display text-3xl font-semibold text-muted-2 num w-10 text-center">{i + 1}</div>
               <Logo src={m.market.logo} abbr={m.market.abbr} color={m.market.brandColor} size={50} />

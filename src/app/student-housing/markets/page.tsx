@@ -71,7 +71,7 @@ export default function MarketsPage() {
                 {rows.map((m) => (
                   <tr key={m.market.id} className="border-b border-line last:border-0 hover:bg-surface-2 transition-colors">
                     <td className="px-3 py-3">
-                      <Link href={`/market/${m.market.id}`} className="flex items-center gap-3">
+                      <Link href={`/student-housing/market/${m.market.id}`} className="flex items-center gap-3">
                         <Logo src={m.market.logo} abbr={m.market.abbr} color={m.market.brandColor} size={34} />
                         <span>
                           <span className="block font-medium text-ink">{m.market.shortName}</span>

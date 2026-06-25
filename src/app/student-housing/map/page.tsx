@@ -55,7 +55,7 @@ export default function MapPage() {
       {!loading && !error && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-5">
           {markets.map((m) => (
-            <Link key={m.market.id} href={`/market/${m.market.id}`}>
+            <Link key={m.market.id} href={`/student-housing/market/${m.market.id}`}>
               <Card className="hover:shadow-[var(--shadow-lg)] hover:-translate-y-0.5 transition-all">
                 <div className="flex items-center gap-3">
                   <Logo src={m.market.logo} abbr={m.market.abbr} color={m.market.brandColor} size={38} />

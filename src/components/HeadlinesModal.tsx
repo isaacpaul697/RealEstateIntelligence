@@ -116,7 +116,7 @@ export function HeadlinesModal({
           <span className="text-[11px] text-muted">
             {articles ? `${articles.length} headlines` : ""}
           </span>
-          <Link href={`/market/${marketId}`} className="text-xs font-semibold text-gold-deep hover:underline">
+          <Link href={`/student-housing/market/${marketId}`} className="text-xs font-semibold text-gold-deep hover:underline">
             Open full market →
           </Link>
         </div>

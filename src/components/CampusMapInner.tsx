@@ -153,7 +153,7 @@ export default function CampusMapInner({
                   <div className="text-xs text-muted num">{m.market.enrollment.toLocaleString()} students</div>
                 )}
                 <button
-                  onClick={() => router.push(`/market/${m.market.id}`)}
+                  onClick={() => router.push(`/student-housing/market/${m.market.id}`)}
                   className="mt-2 text-xs font-semibold text-gold-deep hover:underline"
                 >
                   Open market →
