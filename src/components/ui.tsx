@@ -177,7 +177,7 @@ export function CardLink({ href, children, className = "" }: { href: string; chi
   );
 }
 
-/** Lightweight loading / empty / error states (no mock fallback). */
+/** Lightweight loading / empty / error states. */
 export function StateBlock({ title, note }: { title: string; note?: string }) {
   return (
     <Card className="py-12 text-center">

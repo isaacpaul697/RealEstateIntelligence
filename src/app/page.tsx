@@ -20,14 +20,14 @@ interface FeedArticle {
 const NEWS_CACHE_KEY = "cc.cache.news";
 const CACHE_TTL = 12 * 60 * 60 * 1000;
 
-/** The live, free, no-mock data sources behind every figure in the app. */
+/** The live, free data sources behind every figure in the app. */
 const SOURCE_CHIPS = [
   "College Scorecard", "Census ACS", "BLS", "FRED", "FEMA NRI", "HUD FMR",
   "Wikipedia", "Open-Meteo", "USGS", "OpenStreetMap", "Google News", "ESPN",
 ];
 
 const STEPS = [
-  { n: "01", h: "Pull live university data", b: "Federal enrollment, acceptance & retention from the College Scorecard API, with no mock numbers." },
+  { n: "01", h: "Pull live university data", b: "Federal enrollment, acceptance & retention from the College Scorecard API." },
   { n: "02", h: "Layer the local market", b: "Census demographics, BLS jobs, HUD fair-market rents, FEMA hazard, climate & seismic exposure per county." },
   { n: "03", h: "Map real supply & demand", b: "Named apartment buildings near each campus from OpenStreetMap, plus live housing headlines from Google News." },
   { n: "04", h: "Score 0–100", b: "A transparent weighted model blends every signal into one acquisition score, banded from Strong Buy to Overpriced." },
@@ -83,7 +83,7 @@ export default function Home() {
                 <span className="absolute inline-flex w-full h-full rounded-full bg-good opacity-60 animate-ping" />
                 <span className="relative inline-flex w-2 h-2 rounded-full bg-good" />
               </span>
-              Live data · zero mock
+              Live data
             </span>
             <span className="inline-flex items-center text-[11px] font-semibold uppercase tracking-wider text-muted bg-surface-2 border border-line rounded-full px-3 py-1">
               Portfolio project

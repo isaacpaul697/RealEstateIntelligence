@@ -244,9 +244,10 @@ export default function MarketDetail() {
                 </div>
                 <div className="text-xs text-muted mt-1">{apt.street ?? "Address not listed"} · {apt.distanceMi.toFixed(1)} mi</div>
                 <div className="flex items-center justify-between mt-2">
-                  <span className="text-xs text-muted">{apt.estUnits} units</span>
+                  <span className="text-xs text-muted">{apt.estBeds} beds · ${Math.round(apt.estMonthlyRent).toLocaleString()}/bed/mo</span>
                   <span className="text-xs font-semibold text-good">${Math.round(apt.estAnnualRevenue).toLocaleString()}/yr</span>
                 </div>
+                <div className="text-[10px] text-muted-2 mt-0.5">Rent basis: {apt.rentSource}</div>
               </button>
             ))}
           </div>

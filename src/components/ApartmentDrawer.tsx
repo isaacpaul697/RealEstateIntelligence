@@ -80,6 +80,7 @@ export default function ApartmentDrawer({
       marketName,
       marketState,
       estUnits: apartment.estUnits,
+      estBeds: apartment.estBeds,
       estAnnualRevenue: apartment.estAnnualRevenue,
       distanceMi: apartment.distanceMi,
       website: apartment.website,
@@ -161,9 +162,9 @@ export default function ApartmentDrawer({
                   <div className="text-[10px] text-muted mt-0.5">mi</div>
                 </div>
                 <div className="bg-surface-2 border border-line rounded-[var(--radius-card)] p-3 text-center">
-                  <div className="text-[10px] uppercase tracking-wide text-muted font-semibold mb-1">Est. Units</div>
+                  <div className="text-[10px] uppercase tracking-wide text-muted font-semibold mb-1">Est. Beds</div>
                   <div className="font-display text-[18px] font-semibold text-ink num leading-none">
-                    {apartment.estUnits}
+                    {apartment.estBeds}
                   </div>
                 </div>
                 <div className="bg-surface-2 border border-line rounded-[var(--radius-card)] p-3 text-center">

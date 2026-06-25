@@ -72,7 +72,7 @@ export default function WatchlistPage() {
                       Distance
                     </th>
                     <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-muted text-right">
-                      Est. Units
+                      Est. Beds
                     </th>
                     <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-muted text-right">
                       Est. Annual Revenue
@@ -106,7 +106,7 @@ export default function WatchlistPage() {
                         {apt.distanceMi.toFixed(1)} mi
                       </td>
                       <td className="px-4 py-3 text-right num text-ink">
-                        {fmtNum(apt.estUnits)}
+                        {fmtNum(apt.estBeds)}
                       </td>
                       <td className="px-4 py-3 text-right num text-good font-medium">
                         {fmtMoney(apt.estAnnualRevenue)}

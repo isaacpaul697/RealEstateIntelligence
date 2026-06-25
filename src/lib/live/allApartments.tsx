@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import type { Apartment } from "../types";
 
-const CACHE_KEY = "cc.cache.all-apartments";
+const CACHE_KEY = "cc.cache.all-apartments.v4"; // v4: footprint-area unit model
 const CACHE_TTL = 12 * 60 * 60 * 1000; // 12 hours
 
 interface AllApartmentsState {

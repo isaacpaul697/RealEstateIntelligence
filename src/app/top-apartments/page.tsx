@@ -14,7 +14,7 @@ const fmtMoney = (n: number) => "$" + Math.round(n).toLocaleString("en-US");
 
 type NationalApt = Apartment & { marketId: string; marketName: string; marketState: string };
 
-const NAT_CACHE_KEY = "cc.cache.top-apartments";
+const NAT_CACHE_KEY = "cc.cache.top-apartments.v4"; // v4: footprint-area unit model
 const CACHE_TTL = 12 * 60 * 60 * 1000; // 12 hours
 
 function useNationalTopApartments() {
@@ -197,8 +197,8 @@ function SchoolTable({ apts, total, schoolName, onSelect, isSaved }: {
               <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-muted text-center w-10">#</th>
               <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-muted text-left">Apartment</th>
               <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-muted text-right">Distance</th>
-              <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-muted text-right">Est. Units</th>
-              <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-muted text-right">Est. Rent/mo</th>
+              <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-muted text-right">Est. Beds</th>
+              <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-muted text-right">Rent/bed/mo</th>
               <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-muted text-right">Est. Annual Revenue</th>
               <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-muted text-left">Website</th>
             </tr>
@@ -225,7 +225,7 @@ function SchoolTable({ apts, total, schoolName, onSelect, isSaved }: {
                   </div>
                 </td>
                 <td className="px-4 py-3 text-right num text-ink-soft">{apt.distanceMi.toFixed(1)} mi</td>
-                <td className="px-4 py-3 text-right num font-semibold text-ink">{fmtNum(apt.estUnits)}</td>
+                <td className="px-4 py-3 text-right num font-semibold text-ink">{fmtNum(apt.estBeds)}</td>
                 <td className="px-4 py-3 text-right num text-ink-soft">{fmtMoney(apt.estMonthlyRent)}</td>
                 <td className="px-4 py-3 text-right num font-semibold text-good">{fmtMoney(apt.estAnnualRevenue)}</td>
                 <td className="px-4 py-3">
@@ -251,7 +251,7 @@ function SchoolTable({ apts, total, schoolName, onSelect, isSaved }: {
         </table>
       </div>
       <div className="px-5 py-3 border-t border-line text-[11px] text-muted">
-        Unit counts estimated from OSM building data (levels × 8 avg units/floor, or 30 default). Rent based on regional student-housing averages. Revenue = units × rent × 12.
+        Beds estimated from OSM building data (units × ~2 beds/unit). Student housing leases by the bed, so revenue = estimated beds × real per-bed rent (HUD FMR / Census, regional fallback) × 12.
       </div>
     </Card>
   );
@@ -277,7 +277,7 @@ function NationalTable({ apts, onSelect, isSaved }: {
               <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-muted text-left">Apartment</th>
               <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-muted text-left">Campus</th>
               <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-muted text-right">Distance</th>
-              <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-muted text-right">Est. Units</th>
+              <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-muted text-right">Est. Beds</th>
               <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-muted text-right">Est. Annual Revenue</th>
               <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-muted text-left">Website</th>
             </tr>
@@ -307,7 +307,7 @@ function NationalTable({ apts, onSelect, isSaved }: {
                   {apt.marketName}, {apt.marketState}
                 </td>
                 <td className="px-4 py-3 text-right num text-ink-soft">{apt.distanceMi.toFixed(1)} mi</td>
-                <td className="px-4 py-3 text-right num font-semibold text-ink">{fmtNum(apt.estUnits)}</td>
+                <td className="px-4 py-3 text-right num font-semibold text-ink">{fmtNum(apt.estBeds)}</td>
                 <td className="px-4 py-3 text-right num font-semibold text-good">{fmtMoney(apt.estAnnualRevenue)}</td>
                 <td className="px-4 py-3">
                   {apt.website ? (

@@ -120,7 +120,7 @@ export default function ApartmentsPage() {
                   <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-muted text-left">Name</th>
                   <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-muted text-left">Address</th>
                   <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-muted text-right">Distance</th>
-                  <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-muted text-right">Est. Units</th>
+                  <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-muted text-right">Est. Beds</th>
                   <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-muted text-right">Est. Revenue/yr</th>
                   <th className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wide text-muted text-left">Website</th>
                 </tr>
@@ -145,7 +145,7 @@ export default function ApartmentsPage() {
                     </td>
                     <td className="px-4 py-3 text-ink-soft">{apt.street ?? "n/a"}</td>
                     <td className="px-4 py-3 text-right num text-ink-soft">{apt.distanceMi.toFixed(1)} mi</td>
-                    <td className="px-4 py-3 text-right num text-ink">{fmtNum(apt.estUnits)}</td>
+                    <td className="px-4 py-3 text-right num text-ink">{fmtNum(apt.estBeds)}</td>
                     <td className="px-4 py-3 text-right num text-good font-medium">{fmtMoney(apt.estAnnualRevenue)}</td>
                     <td className="px-4 py-3">
                       {apt.website ? (
@@ -170,7 +170,7 @@ export default function ApartmentsPage() {
             </table>
           </div>
           <div className="px-5 py-3 border-t border-line text-[11px] text-muted">
-            Units estimated from OSM building data. Revenue = units × regional avg rent × 12.
+            Beds estimated from OSM building data (units × ~2 beds/unit). Student housing leases by the bed: revenue = estimated beds × real per-bed rent (HUD FMR / Census, regional fallback) × 12.
           </div>
         </Card>
       )}

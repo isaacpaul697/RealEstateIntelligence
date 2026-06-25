@@ -10,6 +10,7 @@ export interface SavedApartment {
   marketName: string;
   marketState: string;
   estUnits: number;
+  estBeds: number;
   estAnnualRevenue: number;
   distanceMi: number;
   website: string | null;

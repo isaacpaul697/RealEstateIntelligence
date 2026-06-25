@@ -170,7 +170,7 @@ export default function NotesPage() {
                     <div className="min-w-0 flex-1">
                       <div className="font-medium text-ink text-sm truncate">{apt.name}</div>
                       <div className="text-xs text-muted truncate">
-                        {apt.street ?? "Address not listed"} · {apt.distanceMi.toFixed(1)} mi · {fmtNum(apt.estUnits)} units
+                        {apt.street ?? "Address not listed"} · {apt.distanceMi.toFixed(1)} mi · {fmtNum(apt.estBeds)} beds
                       </div>
                     </div>
                     {noted && !open && (

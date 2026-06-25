@@ -33,7 +33,7 @@ export default function SettingsPage() {
       </Card>
 
       <Card className="mb-6">
-        <SectionTitle sub="All data is live, no mock fallback">Data sources</SectionTitle>
+        <SectionTitle sub="All data is fetched live from public APIs">Data sources</SectionTitle>
         <div className="text-sm text-ink-soft space-y-1.5">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-good" />

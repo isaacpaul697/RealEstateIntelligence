@@ -7,7 +7,7 @@ const CACHE_TTL = 12 * 60 * 60 * 1000; // 12 hours
 
 interface CachedDetail { apartments: Apartment[]; articles: Article[]; ts: number }
 
-function cacheKey(id: string) { return `cc.cache.market.${id}`; }
+function cacheKey(id: string) { return `cc.cache.market.v4.${id}`; } // v4: footprint-area unit model
 
 function readDetailCache(id: string): CachedDetail | null {
   try {

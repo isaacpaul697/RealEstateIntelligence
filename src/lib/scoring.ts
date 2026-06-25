@@ -121,6 +121,8 @@ export function scoreMarket(
   return { score, label: labelFor(score), factors };
 }
 
-export const fmtMoney = (n: number) => "$" + Math.round(n).toLocaleString("en-US");
-export const fmtPct = (n: number, d = 1) => `${n.toFixed(d)}%`;
-export const fmtNum = (n: number) => n.toLocaleString("en-US");
+export const fmtMoney = (n: number | null | undefined) =>
+  "$" + Math.round(Number(n) || 0).toLocaleString("en-US");
+export const fmtPct = (n: number, d = 1) => `${(Number(n) || 0).toFixed(d)}%`;
+export const fmtNum = (n: number | null | undefined) =>
+  (Number(n) || 0).toLocaleString("en-US");

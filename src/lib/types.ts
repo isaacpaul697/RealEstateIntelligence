@@ -28,8 +28,11 @@ export interface Apartment {
   street: string | null;
   distanceMi: number;
   estUnits: number;
-  estMonthlyRent: number;
-  estAnnualRevenue: number;
+  estBeds: number; // student housing leases by the bed, so revenue is bed-driven
+  estMonthlyRent: number; // per-BED monthly rent
+  estAnnualRevenue: number; // beds × per-bed rent × 12
+  /** Where the per-bed rent came from: real HUD/Census data or a regional fallback. */
+  rentSource: string;
 }
 
 /** Live market record. Raw inputs only - the score is computed from these. */

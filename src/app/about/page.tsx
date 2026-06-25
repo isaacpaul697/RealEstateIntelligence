@@ -96,7 +96,7 @@ export default function AboutPage() {
             ))}
           </div>
           <p className="text-sm text-muted mt-4 leading-relaxed">
-            Zero mock data. Every figure is fetched from a live API or transparently modeled from live inputs and labeled "estimated."
+            Every figure is fetched from a live API or transparently modeled from live inputs and labeled "estimated."
             Rate-limit–safe caching ensures the app stays fast without burning API quotas.
           </p>
         </Card>
