@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import type { OpportunityLabel, Provenance } from "@/lib/types";
 import { LABEL_TONE } from "@/lib/scoring";
+import { CountUpText } from "@/components/CountUp";
 
 export type Tone =
   | "vivid"
@@ -110,7 +111,9 @@ export function Stat({
   return (
     <Card className="flex flex-col gap-1">
       <span className="text-xs text-muted">{label}</span>
-      <span className="font-display text-[26px] font-semibold text-ink num leading-none">{value}</span>
+      <span className="font-display text-[26px] font-semibold text-ink num leading-none">
+        <CountUpText value={value} />
+      </span>
       {delta && (
         <span className={`text-xs font-medium num ${tone ? toneClass[tone].split(" ")[1] : "text-muted"}`}>
           {delta}

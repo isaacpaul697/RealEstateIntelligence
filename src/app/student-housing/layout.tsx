@@ -1,6 +1,7 @@
 import { Sidebar } from "@/components/Sidebar";
 import { Topbar } from "@/components/Topbar";
 import { AppBackground } from "@/components/AppBackground";
+import { ScrollSkylineRail } from "@/components/ScrollSkylineRail";
 import { MobileNavProvider } from "@/components/MobileNav";
 import { LiveDataProvider } from "@/lib/live/provider";
 import { AllApartmentsProvider } from "@/lib/live/allApartments";
@@ -16,6 +17,7 @@ export default function StudentHousingLayout({ children }: Readonly<{ children: 
             <MobileNavProvider>
               <div className="flex min-h-screen">
                 <AppBackground />
+                <ScrollSkylineRail />
                 <Sidebar />
                 <div className="flex-1 min-w-0 flex flex-col">
                   <Topbar />

@@ -1,8 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { LogoMark } from "@/components/LogoMark";
+import { BuildOverlay } from "@/components/BuildTransition";
 import { HubHero } from "@/components/HubHero";
+import { ScrollSkylineRail } from "@/components/ScrollSkylineRail";
+import { ScrollProgressBar, ParallaxHero } from "@/components/ScrollFX";
 import { AppBackground } from "@/components/AppBackground";
 import { Reveal } from "@/components/Reveal";
 import { useSettings } from "@/lib/settings";
@@ -62,9 +67,37 @@ const DATA_SOURCES: DataSource[] = [
 
 export default function Hub() {
   const { dark, toggleDark } = useSettings();
+  const router = useRouter();
+  const [pending, setPending] = useState<string | null>(null);
+
+  /**
+   * Launch a workspace through a ~1s "building being built" interstitial, then
+   * navigate. Modifier-clicks (new tab) and reduced-motion users skip the show.
+   */
+  const launch = (ev: React.MouseEvent, href: string) => {
+    if (ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey || ev.button !== 0) return;
+    ev.preventDefault();
+    if (pending) return;
+    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      router.push(href);
+      return;
+    }
+    router.prefetch(href);
+    setPending(href);
+    window.setTimeout(() => router.push(href), 1000);
+  };
+
   return (
     <div className="min-h-screen flex flex-col relative">
       <AppBackground />
+      <BuildOverlay show={pending !== null} />
+
+      {/* scroll-progress bar: fills left-to-right as the page scrolls */}
+      <ScrollProgressBar />
+
+      {/* ambient side-rail skyline that builds floor-by-floor as you scroll */}
+      <ScrollSkylineRail />
+
 
       <header className="h-[60px] flex items-center justify-between px-6 md:px-10 border-b border-line">
         <div className="flex items-center gap-3">
@@ -109,15 +142,15 @@ export default function Hub() {
               a per-asset-class deep dive, or the student-housing acquisitions desk.
             </p>
           </div>
-          <div className="hidden md:block">
+          <ParallaxHero>
             <HubHero />
-          </div>
+          </ParallaxHero>
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-8">
           {ENTRIES.map((e, i) => (
             <Reveal key={e.href} delayMs={i * 60}>
-            <Link href={e.href}
+            <Link href={e.href} onClick={(ev) => launch(ev, e.href)}
               className="group block h-full rounded-[var(--radius)] bg-surface border border-line p-5 md:p-6 shadow-[var(--shadow)] hover:shadow-[var(--shadow-lg)] hover:border-line-strong transition-all">
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full shrink-0" style={{ background: e.color }} />
@@ -142,7 +175,7 @@ export default function Hub() {
             <div className="text-[10.5px] font-semibold uppercase tracking-[1.2px] text-muted">Explore by asset class</div>
             <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-7 gap-2.5 mt-3.5">
               {ASSET_CLASSES.map((a) => (
-                <Link key={a.href} href={a.href}
+                <Link key={a.href} href={a.href} onClick={(ev) => launch(ev, a.href)}
                   className="group flex flex-col items-center text-center gap-2 rounded-[var(--radius)] bg-surface border border-line px-2 py-3.5 shadow-[var(--shadow)] hover:border-line-strong hover:shadow-[var(--shadow-lg)] transition-all">
                   <span className="grid place-items-center w-9 h-9 rounded-full shrink-0 transition-transform group-hover:-translate-y-0.5"
                     style={{ background: `color-mix(in srgb, ${a.color} 16%, transparent)` }}>
@@ -178,6 +211,7 @@ export default function Hub() {
             </div>
           </div>
         </Reveal>
+
       </main>
 
       <footer className="border-t border-line px-6 md:px-10 py-5 text-[12px] text-muted">

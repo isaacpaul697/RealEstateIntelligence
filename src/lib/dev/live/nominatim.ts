@@ -1,7 +1,7 @@
-import { UA, DAY, memo } from "./http";
+import { UA, DAY, HOUR, memo } from "./http";
 
 /**
- * OpenStreetMap Nominatim — geocode a typed city/area into a center + bbox.
+ * OpenStreetMap Nominatim geocoder: turn a typed city/area into a center + bbox.
  * Keyless; requires a descriptive User-Agent. Heavily cached.
  */
 export interface GeoPlace {
@@ -10,6 +10,54 @@ export interface GeoPlace {
   lng: number;
   /** [south, north, west, east] */
   bbox: [number, number, number, number];
+}
+
+export interface PlaceSuggestion {
+  /** Full label, e.g. "Boise, Ada County, Idaho, United States". */
+  label: string;
+  /** Compact "City, ST"-style label for the input value. */
+  short: string;
+  lat: number;
+  lng: number;
+}
+
+/** Trim Nominatim's verbose display name to a compact "first, second" label. */
+function shorten(displayName: string): string {
+  return displayName.split(",").map((s) => s.trim()).slice(0, 2).join(", ");
+}
+
+/**
+ * Typeahead suggestions for the area search box. Returns up to `limit` US
+ * places matching the partial query. Cached briefly per term so repeated
+ * keystrokes don't hammer Nominatim.
+ */
+export async function suggestPlaces(query: string, limit = 6): Promise<PlaceSuggestion[]> {
+  const q = query.trim();
+  if (q.length < 2) return [];
+  return memo(`suggest:${q.toLowerCase()}`, HOUR, async () => {
+    const url =
+      `https://nominatim.openstreetmap.org/search` +
+      `?q=${encodeURIComponent(q)}&format=json&limit=${limit}&countrycodes=us&addressdetails=0&dedupe=1`;
+    try {
+      const res = await fetch(url, {
+        headers: { "User-Agent": UA, Accept: "application/json" },
+        next: { revalidate: HOUR },
+      });
+      if (!res.ok) return [];
+      const arr = (await res.json()) as Array<{ display_name: string; lat: string; lon: string }>;
+      const seen = new Set<string>();
+      const out: PlaceSuggestion[] = [];
+      for (const r of arr) {
+        const short = shorten(r.display_name);
+        if (seen.has(short)) continue;
+        seen.add(short);
+        out.push({ label: r.display_name, short, lat: Number(r.lat), lng: Number(r.lon) });
+      }
+      return out;
+    } catch {
+      return [];
+    }
+  }, (v) => v.length > 0);
 }
 
 export async function geocode(query: string): Promise<GeoPlace | null> {

@@ -1,6 +1,7 @@
 import { Sidebar } from "@/components/Sidebar";
 import { Topbar } from "@/components/Topbar";
 import { AppBackground } from "@/components/AppBackground";
+import { ScrollSkylineRail } from "@/components/ScrollSkylineRail";
 import { MobileNavProvider } from "@/components/MobileNav";
 
 export default function AppLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -8,6 +9,7 @@ export default function AppLayout({ children }: Readonly<{ children: React.React
     <MobileNavProvider>
       <div className="flex min-h-screen">
         <AppBackground />
+        <ScrollSkylineRail />
         <Sidebar />
         <div className="flex-1 min-w-0 flex flex-col">
           <Topbar />

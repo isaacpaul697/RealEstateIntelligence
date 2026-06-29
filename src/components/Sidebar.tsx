@@ -58,7 +58,7 @@ const SECTIONS: SectionTab[] = [
 /** Student housing keeps its rich, multi-tool sidebar exactly as before. */
 const HOUSING_GROUPS: Group[] = [
   {
-    label: "Overview",
+    label: "In this section",
     items: [
       { href: "/student-housing", name: "Home", icon: "M3 11.5 12 4l9 7.5M5 10v10h14V10", exact: true },
       { href: "/student-housing/map", name: "Map View", icon: "M3 6v15l6-3 6 3 6-3V3l-6 3-6-3-6 3Zm6 0v12m6-9v12" },

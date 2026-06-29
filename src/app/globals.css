@@ -248,11 +248,73 @@ a, button { transition: color .15s ease, background-color .15s ease, border-colo
 .cc-reveal { opacity: 0; transform: translateY(14px); transition: opacity .55s ease, transform .55s cubic-bezier(.22,.8,.3,1); will-change: opacity, transform; }
 .cc-reveal-in { opacity: 1; transform: none; }
 
+/* Skyline scroll progress is computed in JS (ScrollSkylineRail / ScrollFX) and
+   applied via inline transforms so it works in every browser and degrades to
+   the finished state when reduced. Side-rail towers grow up from the ground, so
+   they pivot from their base. */
+.cc-rail-tower { transform-box: fill-box; transform-origin: 50% 100%; }
+/* Idle construction motion on the side-rail scene (growth itself is scroll-driven). */
+/* The trolley travels along the jib while the load hoists up and down the cable,
+   so the crane reads as actively lifting material onto the towers. */
+.cc-crane-trolley { transform-box: fill-box; animation: cc-crane-trolley 6s ease-in-out infinite; }
+@keyframes cc-crane-trolley {
+  0%   { transform: translateX(24px); }
+  20%  { transform: translateX(24px); }
+  45%  { transform: translateX(-28px); }
+  70%  { transform: translateX(-28px); }
+  95%  { transform: translateX(24px); }
+  100% { transform: translateX(24px); }
+}
+.cc-crane-hoist  { transform-box: fill-box; animation: cc-crane-hoist 6s ease-in-out infinite; }
+@keyframes cc-crane-hoist {
+  0%   { transform: translateY(0); }
+  15%  { transform: translateY(-42px); }
+  45%  { transform: translateY(-42px); }
+  60%  { transform: translateY(0); }
+  70%  { transform: translateY(-42px); }
+  95%  { transform: translateY(-42px); }
+  100% { transform: translateY(0); }
+}
+.cc-crane-cable  { transform-box: fill-box; transform-origin: 50% 0%; animation: cc-crane-cable 6s ease-in-out infinite; }
+@keyframes cc-crane-cable {
+  0%   { transform: scaleY(0.76); }
+  15%  { transform: scaleY(0.04); }
+  45%  { transform: scaleY(0.04); }
+  60%  { transform: scaleY(0.76); }
+  70%  { transform: scaleY(0.04); }
+  95%  { transform: scaleY(0.04); }
+  100% { transform: scaleY(0.76); }
+}
+.cc-worker-arm   { transform-box: fill-box; transform-origin: 0% 50%; animation: cc-worker-arm .7s ease-in-out infinite; }
+@keyframes cc-worker-arm   { 0%,100% { transform: rotate(-26deg); } 50% { transform: rotate(8deg); } }
+.cc-window-person { transform-box: fill-box; transform-origin: 50% 100%; animation: cc-window-person 2.4s ease-in-out infinite; }
+@keyframes cc-window-person { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-1.2px); } }
+
+/* ---- Build transition: a tower assembles floor-by-floor before navigation. ---- */
+.cc-build-overlay { animation: cc-build-fade .2s ease both; }
+@keyframes cc-build-fade { from { opacity: 0; } to { opacity: 1; } }
+.cc-build-floor {
+  transform-box: fill-box; transform-origin: 50% 100%;
+  animation: cc-build-floor .42s cubic-bezier(.22,.9,.3,1) both;
+}
+@keyframes cc-build-floor {
+  0%   { opacity: 0; transform: translateY(16px) scaleY(.15); }
+  55%  { opacity: 1; }
+  100% { opacity: 1; transform: translateY(0) scaleY(1); }
+}
+.cc-build-win { animation: cc-build-win .3s ease both; }
+@keyframes cc-build-win { from { opacity: 0; } to { opacity: .9; } }
+.cc-build-hook { animation: cc-build-hook 1.1s ease-in-out infinite; }
+@keyframes cc-build-hook { 0%,100% { transform: translateY(0); } 50% { transform: translateY(3px); } }
+.cc-build-dot { animation: cc-build-dot 1s ease-in-out infinite; }
+@keyframes cc-build-dot { 0%,100% { opacity: .25; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-3px); } }
+
 @media (prefers-reduced-motion: reduce) {
   .cc-hero-build, .cc-hero-lite, .cc-hero-rope, .cc-hero-block, .cc-hero-car,
   .cc-campus-tassel, .cc-campus-spark, .cc-campus-float, .cc-campus-sway, .cc-dev-build,
   .cc-hero-bob, .cc-hero-pulse, .cc-hero-tilt,
   .cc-emb-bob, .cc-emb-toss, .cc-emb-hoist, .cc-emb-rope,
+  .cc-crane-trolley, .cc-crane-hoist, .cc-crane-cable, .cc-worker-arm, .cc-window-person,
   .cc-radar-ping, .cc-radar-pin {
     animation: none !important;
     transform: none !important;

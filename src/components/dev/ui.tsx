@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import type { Provenance, PropertyType } from "@/lib/dev/types";
 import { TYPE_COLOR, TYPE_LABEL } from "@/lib/dev/types";
-import { CountUp, type CountFormat } from "@/components/CountUp";
+import { CountUp, CountUpText, type CountFormat } from "@/components/CountUp";
 
 export function Card({
   children,
@@ -95,7 +95,7 @@ export function Stat({
         {provenance && <ProvenanceTag p={provenance} />}
       </span>
       <span className="font-display text-[26px] font-semibold text-ink num leading-none">
-        {to != null && format ? <CountUp to={to} format={format} /> : value}
+        {to != null && format ? <CountUp to={to} format={format} /> : <CountUpText value={value} />}
       </span>
       {sub && <span className="text-xs text-muted num">{sub}</span>}
     </Card>
