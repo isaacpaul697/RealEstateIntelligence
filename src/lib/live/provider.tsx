@@ -4,7 +4,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 import type { LiveMarket } from "../types";
 
 const CACHE_KEY = "cc.cache.markets";
-const CACHE_TTL = 12 * 60 * 60 * 1000; // 12 hours
+const CACHE_TTL = 24 * 60 * 60 * 1000; // hard expiry: ignore cache older than this
+const STALE_AFTER = 30 * 60 * 1000;     // serve instantly, but revalidate after 30m
 
 interface CacheEntry {
   markets: LiveMarket[];
@@ -14,7 +15,9 @@ interface CacheEntry {
 
 function readCache(): CacheEntry | null {
   try {
-    const raw = sessionStorage.getItem(CACHE_KEY);
+    // localStorage (not sessionStorage) so returning visitors and new tabs get
+    // an instant paint from the last good payload instead of a cold spinner.
+    const raw = localStorage.getItem(CACHE_KEY);
     if (!raw) return null;
     const entry = JSON.parse(raw) as CacheEntry;
     if (Date.now() - entry.ts < CACHE_TTL && entry.markets.length > 0) return entry;
@@ -24,7 +27,7 @@ function readCache(): CacheEntry | null {
 
 function writeCache(markets: LiveMarket[], fetchedAt: string) {
   try {
-    sessionStorage.setItem(CACHE_KEY, JSON.stringify({ markets, fetchedAt, ts: Date.now() }));
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ markets, fetchedAt, ts: Date.now() }));
   } catch { /* quota exceeded */ }
 }
 
@@ -51,14 +54,17 @@ export function LiveDataProvider({ children }: { children: React.ReactNode }) {
   });
 
   useEffect(() => {
-    // Try cache first
+    let alive = true;
+
+    // Paint cached data immediately when present.
     const cached = readCache();
     if (cached) {
       setState({ markets: cached.markets, loading: false, error: null, fetchedAt: cached.fetchedAt });
-      return;
+      // Still fresh enough: don't hit the network at all.
+      if (Date.now() - cached.ts < STALE_AFTER) return () => { alive = false; };
+      // Stale: refresh in the background without showing a spinner.
     }
 
-    let alive = true;
     fetch("/api/markets")
       .then((r) => {
         if (!r.ok) throw new Error(`markets ${r.status}`);
@@ -68,11 +74,13 @@ export function LiveDataProvider({ children }: { children: React.ReactNode }) {
         if (!alive) return;
         const markets = d.markets ?? [];
         const fetchedAt = d.fetchedAt ?? new Date().toISOString();
-        writeCache(markets, fetchedAt);
+        if (markets.length > 0) writeCache(markets, fetchedAt);
         setState({ markets, loading: false, error: null, fetchedAt });
       })
       .catch((e) => {
         if (!alive) return;
+        // Keep showing stale cache on a failed background refresh.
+        if (cached) return;
         setState({ markets: [], loading: false, error: String(e), fetchedAt: null });
       });
     return () => { alive = false; };

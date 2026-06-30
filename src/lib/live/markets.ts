@@ -88,6 +88,25 @@ export async function getLiveMarkets(): Promise<LiveMarket[]> {
   ]);
 
   const now = new Date().toISOString();
+  return buildMarkets({ scores, logos, fred, census, bls, fema, hud, wiki, climate, seismic, newsLists, now });
+}
+
+type SourceBundle = {
+  scores: Awaited<ReturnType<typeof fetchScorecard>>;
+  logos: Awaited<ReturnType<typeof fetchLogos>>;
+  fred: FredData;
+  census: Awaited<ReturnType<typeof fetchCensusData>>;
+  bls: Awaited<ReturnType<typeof fetchBlsData>>;
+  fema: Awaited<ReturnType<typeof fetchFemaData>>;
+  hud: Awaited<ReturnType<typeof fetchHudData>>;
+  wiki: Awaited<ReturnType<typeof fetchWikiData>>;
+  climate: Awaited<ReturnType<typeof fetchClimateData>>;
+  seismic: Awaited<ReturnType<typeof fetchSeismicData>>;
+  newsLists: Awaited<ReturnType<typeof fetchNews>>[];
+  now: string;
+};
+
+function buildMarkets({ scores, logos, fred, census, bls, fema, hud, wiki, climate, seismic, newsLists, now }: SourceBundle): LiveMarket[] {
   return UNIVERSITIES.map((u, i) => {
     const sc = scores.get(u.scorecardId);
     const enrollment = sc?.enrollment ?? u.approxEnrollment;
@@ -205,4 +224,48 @@ export async function getLiveMarkets(): Promise<LiveMarket[]> {
       fetchedAt: now,
     } satisfies LiveMarket;
   });
+}
+
+export interface MarketsSnapshot {
+  markets: LiveMarket[];
+  fetchedAt: string;
+}
+
+// Per-process snapshot cache. getLiveMarkets() fans out to ~10 public APIs plus
+// batched news and can take many seconds cold; without this every /api/markets
+// hit re-ran the whole aggregation. We keep the assembled result in module
+// memory and serve it stale-while-revalidate: only the very first cold request
+// waits, repeat requests are instant, and an expired snapshot is refreshed in
+// the background so a user never blocks on the slow path again.
+const FRESH_MS = 6 * 60 * 60 * 1000; // serve without refresh for 6h
+let snapshot: { data: MarketsSnapshot; ts: number } | null = null;
+let inflight: Promise<MarketsSnapshot> | null = null;
+
+function refreshSnapshot(): Promise<MarketsSnapshot> {
+  if (inflight) return inflight;
+  inflight = (async () => {
+    const markets = await getLiveMarkets();
+    const data: MarketsSnapshot = { markets, fetchedAt: new Date().toISOString() };
+    // Never cache an empty result (every source timed out): retry next request
+    // rather than pinning a blank payload for the full window.
+    if (markets.length > 0) snapshot = { data, ts: Date.now() };
+    return data;
+  })().finally(() => { inflight = null; });
+  return inflight;
+}
+
+/**
+ * Cached, stale-while-revalidate accessor for the assembled markets payload.
+ * Fresh snapshot -> returned immediately. Stale snapshot -> returned
+ * immediately while a background refresh runs. No snapshot yet (cold) -> awaits
+ * the single in-flight build that concurrent callers all share.
+ */
+export async function getMarketsSnapshot(): Promise<MarketsSnapshot> {
+  const now = Date.now();
+  if (snapshot && now - snapshot.ts < FRESH_MS) return snapshot.data;
+  if (snapshot) {
+    void refreshSnapshot(); // refresh in the background, serve stale now
+    return snapshot.data;
+  }
+  return refreshSnapshot();
 }

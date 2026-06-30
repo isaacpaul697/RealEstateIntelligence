@@ -81,7 +81,14 @@ export default function Home() {
   const propertiesTracked = allApts.reduce((s, list) => s + list.length, 0);
   const bedsTracked = allApts.reduce((s, list) => s + list.reduce((b, a) => b + a.estBeds, 0), 0);
   const unitsTracked = allApts.reduce((s, list) => s + list.reduce((u, a) => u + a.estUnits, 0), 0);
-  const marketsCovered = allApts.filter((list) => list.length > 0).length;
+  // Geographic breadth of the mapped supply, distinct from the headline market
+  // count: how many states the campuses with at least one mapped building span.
+  const coveredIds = new Set(
+    Object.entries(byMarket).filter(([, list]) => list.length > 0).map(([id]) => id),
+  );
+  const statesCovered = new Set(
+    scored.filter((m) => coveredIds.has(m.market.id)).map((m) => m.market.state),
+  ).size;
 
   return (
     <div className="flex flex-col gap-8 cc-fade">
@@ -169,7 +176,7 @@ export default function Home() {
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-y lg:divide-y-0 divide-line border-t border-line">
           {[
-            { label: "Markets with mapped supply", value: marketsCovered, suffix: "campuses", live: true },
+            { label: "States covered", value: statesCovered, suffix: "states with mapped supply", live: true },
             { label: "Properties tracked", value: propertiesTracked, suffix: "named buildings (OSM)", live: true },
             { label: "Beds tracked", value: bedsTracked, suffix: "est. leasable beds", live: false },
             { label: "Units tracked", value: unitsTracked, suffix: "est. dwelling units", live: false },
