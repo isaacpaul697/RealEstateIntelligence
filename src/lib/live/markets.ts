@@ -1,9 +1,10 @@
 import type { LiveMarket } from "../types";
 import { UNIVERSITIES } from "../universities";
+import { withTimeout } from "./http";
 import { fetchScorecard } from "./scorecard";
 import { fetchLogos } from "./logos";
 import { fetchNews, housingQuery } from "./news";
-import { fetchFredData } from "./fred";
+import { fetchFredData, type FredData } from "./fred";
 import { fetchCensusData } from "./census";
 import { fetchBlsData } from "./bls";
 import { fetchFemaData } from "./fema";
@@ -53,26 +54,37 @@ export async function getLiveMarkets(): Promise<LiveMarket[]> {
   const wikiRefs = UNIVERSITIES.map((u) => ({ id: u.id, title: u.wikiTitle }));
   const geoRefs = UNIVERSITIES.map((u) => ({ id: u.id, lat: u.lat, lng: u.lng }));
 
+  // Per-source latency budget. Each public source is fetched independently and
+  // capped so a single slow or unreachable upstream degrades to "unavailable"
+  // rather than stalling the whole markets response (and the page) forever.
+  const SOURCE_BUDGET_MS = 12_000;
+  const NEWS_BUDGET_MS = 14_000;
+  const emptyFred: FredData = { mortgageRate: null, stateHpi: new Map() };
+
   const [scores, logos, fred, census, bls, fema, hud, wiki, climate, seismic] = await Promise.all([
-    fetchScorecard(),
-    fetchLogos(),
-    fetchFredData(),
-    fetchCensusData(allFips),
-    fetchBlsData(allFips),
-    fetchFemaData(allFips),
-    fetchHudData(allFips),
-    fetchWikiData(wikiRefs),
-    fetchClimateData(geoRefs),
-    fetchSeismicData(geoRefs),
-    (async () => {
-      for (let i = 0; i < UNIVERSITIES.length; i += NEWS_BATCH) {
-        const batch = UNIVERSITIES.slice(i, i + NEWS_BATCH);
-        const results = await Promise.all(
-          batch.map((u) => fetchNews(housingQuery(u.shortName), 100)),
-        );
-        results.forEach((r, j) => { newsLists[i + j] = r; });
-      }
-    })(),
+    withTimeout(fetchScorecard(), SOURCE_BUDGET_MS, new Map()),
+    withTimeout(fetchLogos(), SOURCE_BUDGET_MS, new Map()),
+    withTimeout(fetchFredData(), SOURCE_BUDGET_MS, emptyFred),
+    withTimeout(fetchCensusData(allFips), SOURCE_BUDGET_MS, new Map()),
+    withTimeout(fetchBlsData(allFips), SOURCE_BUDGET_MS, new Map()),
+    withTimeout(fetchFemaData(allFips), SOURCE_BUDGET_MS, new Map()),
+    withTimeout(fetchHudData(allFips), SOURCE_BUDGET_MS, new Map()),
+    withTimeout(fetchWikiData(wikiRefs), SOURCE_BUDGET_MS, new Map()),
+    withTimeout(fetchClimateData(geoRefs), SOURCE_BUDGET_MS, new Map()),
+    withTimeout(fetchSeismicData(geoRefs), SOURCE_BUDGET_MS, new Map()),
+    withTimeout(
+      (async () => {
+        for (let i = 0; i < UNIVERSITIES.length; i += NEWS_BATCH) {
+          const batch = UNIVERSITIES.slice(i, i + NEWS_BATCH);
+          const results = await Promise.all(
+            batch.map((u) => fetchNews(housingQuery(u.shortName), 100)),
+          );
+          results.forEach((r, j) => { newsLists[i + j] = r; });
+        }
+      })(),
+      NEWS_BUDGET_MS,
+      undefined,
+    ),
   ]);
 
   const now = new Date().toISOString();
@@ -184,7 +196,7 @@ export async function getLiveMarkets(): Promise<LiveMarket[]> {
       quakeCount: quakes ?? null,
 
       // Google News - count of headlines from the last 90 days (demand momentum)
-      newsCount: recentNewsCount(newsLists[i]),
+      newsCount: recentNewsCount(newsLists[i] ?? []),
 
       // Modeled
       estRentGrowth: estimateRentGrowth(enrollmentGrowth, acceptanceRate),

@@ -92,8 +92,8 @@ export function ScrollSkylineRail() {
 
   return (
     <div
-      className="hidden lg:flex fixed top-0 right-0 h-screen flex-col justify-end pointer-events-none"
-      style={{ width: "clamp(120px, 12vw, 190px)", opacity: 0.55, zIndex: -1 }}
+      className="hidden md:flex fixed top-0 right-0 h-screen flex-col justify-end pointer-events-none"
+      style={{ width: "clamp(110px, 12vw, 190px)", opacity: 0.55, zIndex: -1 }}
       aria-hidden
     >
       <svg
