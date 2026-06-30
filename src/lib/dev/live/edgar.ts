@@ -50,6 +50,81 @@ interface SubmissionsRecent {
   primaryDocument: string[];
 }
 
+/** Public company facts carried at the top of the EDGAR submissions file. */
+export interface CompanyProfile {
+  name: string | null;
+  tickers: string[];
+  exchanges: string[];
+  sicDescription: string | null;
+  category: string | null;
+  /** Fiscal year end as a human "Mon DD" when parseable. */
+  fiscalYearEnd: string | null;
+  stateOfIncorporation: string | null;
+  /** Headquarters as "City, ST". */
+  hq: string | null;
+  website: string | null;
+  formerNames: string[];
+}
+
+interface SubmissionsMeta {
+  name?: string;
+  tickers?: string[];
+  exchanges?: string[];
+  sicDescription?: string;
+  category?: string;
+  fiscalYearEnd?: string; // MMDD
+  stateOfIncorporation?: string;
+  website?: string;
+  addresses?: { business?: { city?: string; stateOrCountry?: string } };
+  formerNames?: { name?: string }[];
+}
+
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+/** Turn an EDGAR "MMDD" fiscal-year-end code into "Mon DD". */
+function fiscalYearEndLabel(mmdd?: string): string | null {
+  if (!mmdd || mmdd.length !== 4) return null;
+  const mo = Number(mmdd.slice(0, 2));
+  const day = Number(mmdd.slice(2));
+  if (!mo || mo > 12 || !day || day > 31) return null;
+  return `${MONTHS[mo - 1]} ${day}`;
+}
+
+/** Fetch the public company profile (facts) for one company by CIK. */
+export async function fetchCompanyProfile(cik: string | number): Promise<CompanyProfile | null> {
+  const cikInt = Number(cik);
+  if (!Number.isFinite(cikInt) || cikInt <= 0) return null;
+  const padded = String(cikInt).padStart(10, "0");
+
+  return memo(`edgar-profile:${padded}`, HALF_DAY, async () => {
+    try {
+      const res = await fetch(`https://data.sec.gov/submissions/CIK${padded}.json`, {
+        headers: { "User-Agent": UA, Accept: "application/json" },
+        next: { revalidate: HALF_DAY },
+      });
+      if (!res.ok) return null;
+      const d = (await res.json()) as SubmissionsMeta;
+      const city = d.addresses?.business?.city;
+      const st = d.addresses?.business?.stateOrCountry;
+      const hq = city && st ? `${city}, ${st}` : city ?? st ?? null;
+      return {
+        name: d.name ?? null,
+        tickers: d.tickers ?? [],
+        exchanges: d.exchanges ?? [],
+        sicDescription: d.sicDescription ?? null,
+        category: d.category ?? null,
+        fiscalYearEnd: fiscalYearEndLabel(d.fiscalYearEnd),
+        stateOfIncorporation: d.stateOfIncorporation ?? null,
+        hq,
+        website: d.website ?? null,
+        formerNames: (d.formerNames ?? []).map((f) => f.name).filter((n): n is string => !!n),
+      } satisfies CompanyProfile;
+    } catch {
+      return null;
+    }
+  });
+}
+
 /** Fetch the most recent material filings for one company by CIK. */
 export async function fetchFilings(cik: string | number, limit = 4): Promise<Filing[]> {
   const cikInt = Number(cik);

@@ -2,6 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 import UnderwritingPanel from "@/components/UnderwritingPanel";
+import { BuildPropertyGraphic } from "@/components/BuildPropertyGraphic";
 import { ProFormaSheet } from "@/components/ProFormaSheet";
 import { Card, ProvenanceTag } from "@/components/ui";
 import { BASE_COST_PER_SQFT, COST_PER_UNIT } from "@/lib/dev/model";
@@ -174,6 +175,15 @@ export function BuildPropertyClient({
       : (units ?? 0) > 0 || (sqft ?? 0) > 0;
 
   const sheetTitle = `${ASSET_LABEL[type]} model${location.trim() ? ` · ${location.trim()}` : ""}`;
+
+  // Live (uncommitted) underwrite that powers the always-on preview graphic, so
+  // the tower and headline numbers react the moment any input changes.
+  const livePreview = useMemo(() => {
+    const res = underwrite(inputs, autoAssumptions(inputs));
+    const noi = res.income.find((l) => l.label === "Net operating income")?.value ?? null;
+    const value = res.valuation[0]?.value ?? null;
+    return { value, noi, available: res.available };
+  }, [inputs]);
 
   // A committed snapshot of the computed pro-forma, refreshed by the Compute button.
   const [computed, setComputed] = useState<{ result: UwResult; title: string } | null>(null);
@@ -358,8 +368,22 @@ export function BuildPropertyClient({
           )}
         </Card>
 
-        {/* Right: the live financial model */}
-        <UnderwritingPanel inputs={inputs} title={sheetTitle} />
+        {/* Right rail: live model preview above the full financial model */}
+        <div className="flex flex-col gap-6">
+          <BuildPropertyGraphic
+            type={type}
+            assetLabel={ASSET_LABEL[type]}
+            mode={mode}
+            units={units}
+            sqft={sqft}
+            totalCost={totalCost}
+            grossRent={annualRent}
+            value={livePreview.value}
+            mortgageRate={mortgageRate}
+            ready={ready && livePreview.available}
+          />
+          <UnderwritingPanel inputs={inputs} title={sheetTitle} />
+        </div>
       </div>
 
       {/* Computed pro-forma sheet + graph, refreshed by the Compute button */}

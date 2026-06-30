@@ -12,6 +12,7 @@ import { fmtNum, fmtPct } from "@/lib/scoring";
 import { CampusMap } from "@/components/CampusMap";
 import { useWatchlist } from "@/lib/watchlist";
 import ApartmentDrawer from "@/components/ApartmentDrawer";
+import { SchoolLogoGraphic } from "@/components/SchoolLogoGraphic";
 import type { Apartment } from "@/lib/types";
 
 function MiniFact({ label, value, note }: { label: string; value: string; note: string }) {
@@ -51,39 +52,52 @@ export default function MarketDetail() {
 
   return (
     <div className="cc-fade">
-      <div className="flex items-center gap-4 mb-6 flex-wrap">
-        <Logo src={m.logo} abbr={m.abbr} color={m.brandColor} size={56} />
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="font-display text-2xl font-semibold text-ink tracking-tight">{m.name}</h1>
-            <LabelChip label={sm.score.label} />
+      <div className="grid lg:grid-cols-[minmax(0,1fr)_300px] gap-6 lg:gap-8 items-start mb-6">
+        <div className="min-w-0 flex flex-col gap-6">
+          <div className="flex items-center gap-4 flex-wrap">
+            <Logo src={m.logo} abbr={m.abbr} color={m.brandColor} size={56} />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-3 flex-wrap">
+                <h1 className="font-display text-2xl font-semibold text-ink tracking-tight">{m.name}</h1>
+                <LabelChip label={sm.score.label} />
+              </div>
+              <p className="text-sm text-muted mt-1">{m.city}, {m.state} · {m.conference} · {m.region}</p>
+            </div>
+            <Link href={`/scorecard?market=${m.id}`} className="px-5 h-10 inline-flex items-center rounded-full text-sm font-semibold text-white"
+              style={{ background: "var(--gold)" }}>
+              View scorecard
+            </Link>
           </div>
-          <p className="text-sm text-muted mt-1">{m.city}, {m.state} · {m.conference} · {m.region}</p>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <Stat label="Enrollment" value={m.enrollment != null ? fmtNum(m.enrollment) : "n/a"} delta={m.enrollmentGrowth != null ? `+${fmtPct(m.enrollmentGrowth)} / yr` : undefined} tone="good" source="scorecard" />
+            <Stat label="Acceptance rate" value={m.acceptanceRate != null ? `${m.acceptanceRate.toFixed(0)}%` : "n/a"} delta="College Scorecard" source="scorecard" />
+            <Stat label="Retention rate" value={m.retentionRate != null ? `${m.retentionRate.toFixed(0)}%` : "n/a"} delta="4-yr full-time" tone="good" source="scorecard" />
+            <Stat label="Housing headlines" value={String(m.newsCount)} delta="recent Google News" tone="info" />
+          </div>
+
+          {/* Census + BLS + FRED macro data */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <Stat label="Median rent" value={m.medianRent != null ? `$${fmtNum(m.medianRent)}/mo` : "n/a"} delta="Census ACS" />
+            <Stat label="County population" value={m.countyPopulation != null ? fmtNum(m.countyPopulation) : "n/a"} delta="Census ACS" />
+            <Stat label="Renter %" value={m.renterPct != null ? `${m.renterPct.toFixed(1)}%` : "n/a"} delta="Census ACS" tone={m.renterPct != null && m.renterPct > 50 ? "good" : undefined} />
+            <Stat label="Unemployment" value={m.unemploymentRate != null ? `${m.unemploymentRate.toFixed(1)}%` : "n/a"} delta="BLS LAUS" tone={m.unemploymentRate != null && m.unemploymentRate < 4 ? "good" : m.unemploymentRate != null && m.unemploymentRate > 6 ? "bad" : undefined} />
+          </div>
         </div>
-        <Link href={`/scorecard?market=${m.id}`} className="px-5 h-10 inline-flex items-center rounded-full text-sm font-semibold text-white"
-          style={{ background: "var(--gold)" }}>
-          View scorecard
-        </Link>
+        <SchoolLogoGraphic
+          logo={m.logo}
+          abbr={m.abbr}
+          shortName={m.shortName}
+          color={m.brandColor}
+          conference={m.conference}
+          enrollment={m.enrollment}
+          newsCount={m.newsCount}
+        />
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <Stat label="Enrollment" value={m.enrollment != null ? fmtNum(m.enrollment) : "n/a"} delta={m.enrollmentGrowth != null ? `+${fmtPct(m.enrollmentGrowth)} / yr` : undefined} tone="good" source="scorecard" />
-        <Stat label="Acceptance rate" value={m.acceptanceRate != null ? `${m.acceptanceRate.toFixed(0)}%` : "n/a"} delta="College Scorecard" source="scorecard" />
-        <Stat label="Retention rate" value={m.retentionRate != null ? `${m.retentionRate.toFixed(0)}%` : "n/a"} delta="4-yr full-time" tone="good" source="scorecard" />
-        <Stat label="Housing headlines" value={String(m.newsCount)} delta="recent Google News" tone="info" />
-      </div>
-
-      {/* Census + BLS + FRED macro data */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-        <Stat label="Median rent" value={m.medianRent != null ? `$${fmtNum(m.medianRent)}/mo` : "n/a"} delta="Census ACS" />
-        <Stat label="County population" value={m.countyPopulation != null ? fmtNum(m.countyPopulation) : "n/a"} delta="Census ACS" />
-        <Stat label="Renter %" value={m.renterPct != null ? `${m.renterPct.toFixed(1)}%` : "n/a"} delta="Census ACS" tone={m.renterPct != null && m.renterPct > 50 ? "good" : undefined} />
-        <Stat label="Unemployment" value={m.unemploymentRate != null ? `${m.unemploymentRate.toFixed(1)}%` : "n/a"} delta="BLS LAUS" tone={m.unemploymentRate != null && m.unemploymentRate < 4 ? "good" : m.unemploymentRate != null && m.unemploymentRate > 6 ? "bad" : undefined} />
+      {/* Room & board + income context + 30-yr mortgage */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
         <Stat label="30-yr mortgage" value={m.mortgageRate != null ? `${m.mortgageRate.toFixed(2)}%` : "n/a"} delta="FRED" />
-      </div>
-
-      {/* Room & board + income context */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
         <Stat label="Room & board (on)" value={m.roomBoardOnCampus != null ? `$${fmtNum(m.roomBoardOnCampus)}/yr` : "n/a"} delta="College Scorecard" source="scorecard" />
         <Stat label="Room & board (off)" value={m.roomBoardOffCampus != null ? `$${fmtNum(m.roomBoardOffCampus)}/yr` : "n/a"} delta="College Scorecard" source="scorecard" />
         <Stat label="Median income" value={m.medianIncome != null ? `$${fmtNum(m.medianIncome)}` : "n/a"} delta="Census ACS" />

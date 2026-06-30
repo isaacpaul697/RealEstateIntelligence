@@ -1,12 +1,12 @@
 import { toDevView } from "@/lib/dev/view";
 import type { CityBundle } from "@/lib/dev/bundle";
 import { CityExplorer } from "@/components/dev/CityExplorer";
+import { CityKpiStrip } from "@/components/dev/CityKpiStrip";
 import { GapPanel } from "@/components/dev/GapPanel";
 import { DeveloperList } from "@/components/dev/DeveloperList";
 import { TypeBars } from "@/components/dev/charts";
 import { Card, SectionTitle, Stat, StateBlock } from "@/components/dev/ui";
 import { fmtNum, fmtCompactUSD } from "@/lib/dev/format";
-import { TYPE_LABEL, type PropertyType } from "@/lib/dev/types";
 import type { CityKpis } from "@/lib/dev/aggregate";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -46,7 +46,7 @@ function buildDataNotes(kpis: CityKpis): string[] {
  * provenance copy: permit cities can show live declared values, OSM areas are
  * always modeled (badged estimated).
  */
-export function CityView({ bundle }: { bundle: CityBundle }) {
+export function CityView({ bundle, showKpis = true }: { bundle: CityBundle; showKpis?: boolean }) {
   const { city, ok, error, developments, kpis, gap, demand, developers, fred, mode } = bundle;
   const osm = mode === "osm";
 
@@ -65,18 +65,7 @@ export function CityView({ bundle }: { bundle: CityBundle }) {
   }
 
   const devViews = developments.map((d) => toDevView(d, fred.costMultiplier));
-  const valueProvenance = !osm && kpis.withDeclaredValue > kpis.count / 2 ? "live" : "estimated";
   const dataNotes = osm ? [] : buildDataNotes(kpis);
-
-  // Replacements for the unreliable "units added" / "time-to-build" metrics: both
-  // of these are computable from every feed (value is always modeled, type is
-  // always classified), so neither falls back to a bare 0 or n/a.
-  const valueTotal = valueProvenance === "live" ? kpis.declaredValueTotal : kpis.modeledValueTotal;
-  const avgValue = kpis.count > 0 ? valueTotal / kpis.count : null;
-  const topType = (Object.entries(kpis.byType) as [PropertyType, number][])
-    .sort((a, b) => b[1] - a[1])[0];
-  const leadingType = topType && topType[1] > 0 ? topType[0] : null;
-  const leadingShare = leadingType ? Math.round((topType[1] / kpis.count) * 100) : null;
 
   return (
     <>
@@ -93,27 +82,7 @@ export function CityView({ bundle }: { bundle: CityBundle }) {
         </div>
       )}
 
-      <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Stat label="Developments" value={fmtNum(kpis.count)} provenance="live" sub={osm ? "mapped buildings" : "recent permits"} />
-        <Stat
-          label="Total value"
-          value={fmtCompactUSD(valueTotal)}
-          provenance={valueProvenance}
-          sub={osm ? "modeled from footprints" : `${kpis.withDeclaredValue} declared · rest modeled`}
-        />
-        <Stat
-          label="Avg project size"
-          value={avgValue != null ? fmtCompactUSD(avgValue) : "n/a"}
-          provenance={valueProvenance}
-          sub="value per development"
-        />
-        <Stat
-          label="Leading type"
-          value={leadingType ? TYPE_LABEL[leadingType] : "n/a"}
-          provenance="live"
-          sub={leadingShare != null ? `${leadingShare}% of ${osm ? "mapped buildings" : "recent permits"}` : undefined}
-        />
-      </section>
+      {showKpis && <CityKpiStrip bundle={bundle} />}
 
       {demand.available && (
         <section>

@@ -39,7 +39,7 @@ export default async function SectorPlayersPage({ params }: { params: Promise<{ 
 
       {players ? (
         <>
-          <SectorPlayers rows={playerRows} intro={players.playersIntro} accent={def.color} />
+          <SectorPlayers rows={playerRows} intro={players.playersIntro} accent={def.color} label={def.label} />
           <SectorNews articles={articles} label={def.label} />
         </>
       ) : (

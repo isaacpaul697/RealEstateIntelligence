@@ -313,13 +313,17 @@ a, button { transition: color .15s ease, background-color .15s ease, border-colo
 .cc-stage-swap { animation: cc-stage-swap .4s ease-out; }
 @keyframes cc-stage-swap { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 
+/* horizontal bar that grows from the left (major-players filing activity) */
+.cc-bar-grow { transform-origin: left center; animation: cc-bar-grow .55s cubic-bezier(.22,.9,.3,1) both; }
+@keyframes cc-bar-grow { 0% { transform: scaleX(0); opacity: .4; } 100% { transform: scaleX(1); opacity: 1; } }
+
 @media (prefers-reduced-motion: reduce) {
   .cc-hero-build, .cc-hero-lite, .cc-hero-rope, .cc-hero-block, .cc-hero-car,
   .cc-campus-tassel, .cc-campus-spark, .cc-campus-float, .cc-campus-sway, .cc-dev-build,
   .cc-hero-bob, .cc-hero-pulse, .cc-hero-tilt,
   .cc-emb-bob, .cc-emb-toss, .cc-emb-hoist, .cc-emb-rope,
   .cc-crane-trolley, .cc-crane-hoist, .cc-crane-cable, .cc-worker-arm, .cc-window-person,
-  .cc-radar-ping, .cc-radar-pin, .cc-stage-swap {
+  .cc-radar-ping, .cc-radar-pin, .cc-stage-swap, .cc-bar-grow {
     animation: none !important;
     transform: none !important;
     opacity: 1 !important;

@@ -38,7 +38,7 @@ export default async function PlayersPage() {
         </p>
       </section>
 
-      <SectorPlayers rows={playerRows} intro={cfg.playersIntro} accent={ACCENT} />
+      <SectorPlayers rows={playerRows} intro={cfg.playersIntro} accent={ACCENT} label="Student housing" />
       <SectorNews articles={articles} label="Student housing" />
     </div>
   );
