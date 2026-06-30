@@ -86,7 +86,9 @@ export default function Hub() {
     }
     router.prefetch(href);
     setPending(href);
-    window.setTimeout(() => router.push(href), 1000);
+    // Hold long enough for the full build animation (floors rise + windows
+    // light up, ~1.1s) to play through and linger a beat before navigating.
+    window.setTimeout(() => router.push(href), 1900);
   };
 
   return (
