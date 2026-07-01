@@ -11,7 +11,8 @@
 export interface SectorCompany {
   name: string;
   ticker: string;
-  cik: number;
+  /** SEC CIK for public filers; null for privately-held firms (e.g. Greystar). */
+  cik: number | null;
   /** A factual one-line description of the firm's focus. */
   note: string;
   /** Domain used for the firm's logo disc. */
@@ -61,6 +62,7 @@ export const SECTOR_PLAYERS: Record<string, SectorPlayersConfig> = {
     playersIntro:
       "The largest publicly-traded apartment owners and operators. Recent activity is pulled live from each firm's SEC filings.",
     companies: [
+      { name: "Greystar", ticker: "PRIVATE", cik: null, note: "Largest US apartment owner, manager, and developer; privately held.", site: "greystar.com" },
       { name: "AvalonBay Communities", ticker: "AVB", cik: 915912, note: "Develops and owns apartments in coastal metros.", site: "avalonbay.com" },
       { name: "Equity Residential", ticker: "EQR", cik: 906107, note: "Urban and high-density apartment portfolio.", site: "equityapartments.com" },
       { name: "Mid-America Apartment", ticker: "MAA", cik: 912595, note: "Sun Belt apartment owner-operator.", site: "maac.com" },

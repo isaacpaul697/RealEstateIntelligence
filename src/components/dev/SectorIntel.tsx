@@ -74,6 +74,8 @@ export function SectorPlayers({
                       <span className="num text-muted-2 shrink-0">{fmtDate(f.date)}</span>
                     </div>
                   ))
+                ) : company.cik == null ? (
+                  <span className="text-[12px] text-muted-2">Privately held, no SEC filings. Open for the full profile.</span>
                 ) : (
                   <span className="text-[12px] text-muted-2">No recent SEC filings.</span>
                 )}

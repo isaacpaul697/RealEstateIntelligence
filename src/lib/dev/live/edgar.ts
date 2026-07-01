@@ -91,7 +91,7 @@ function fiscalYearEndLabel(mmdd?: string): string | null {
 }
 
 /** Fetch the public company profile (facts) for one company by CIK. */
-export async function fetchCompanyProfile(cik: string | number): Promise<CompanyProfile | null> {
+export async function fetchCompanyProfile(cik: string | number | null): Promise<CompanyProfile | null> {
   const cikInt = Number(cik);
   if (!Number.isFinite(cikInt) || cikInt <= 0) return null;
   const padded = String(cikInt).padStart(10, "0");
@@ -126,7 +126,7 @@ export async function fetchCompanyProfile(cik: string | number): Promise<Company
 }
 
 /** Fetch the most recent material filings for one company by CIK. */
-export async function fetchFilings(cik: string | number, limit = 4): Promise<Filing[]> {
+export async function fetchFilings(cik: string | number | null, limit = 4): Promise<Filing[]> {
   const cikInt = Number(cik);
   if (!Number.isFinite(cikInt) || cikInt <= 0) return [];
   const padded = String(cikInt).padStart(10, "0");
@@ -157,6 +157,102 @@ export async function fetchFilings(cik: string | number, limit = 4): Promise<Fil
           url: doc ? `${base}/${doc}` : `${base}/`,
         });
       }
+      return out;
+    } catch {
+      return [];
+    }
+  });
+}
+
+/** One reported financial line, straight from the SEC XBRL company-facts API. */
+export interface CompanyFinancial {
+  label: string;
+  value: number;
+  unit: "usd" | "shares";
+  /** Human period label, e.g. "FY 2025" or "as of 2026-03-31". */
+  period: string;
+}
+
+interface XbrlFact {
+  end: string;
+  val: number;
+  fy?: number;
+  fp?: string;
+  form?: string;
+  start?: string;
+}
+
+interface CompanyFacts {
+  facts?: {
+    "us-gaap"?: Record<string, { units?: Record<string, XbrlFact[]> }>;
+    dei?: Record<string, { units?: Record<string, XbrlFact[]> }>;
+  };
+}
+
+/** Latest full-year (10-K) value for a flow concept; falls back to newest overall. */
+function pickAnnual(units?: XbrlFact[]): XbrlFact | null {
+  if (!units || units.length === 0) return null;
+  const annual = units.filter((u) => u.fp === "FY" && (u.form === "10-K" || u.form === "10-K/A"));
+  const pool = annual.length ? annual : units;
+  return pool.reduce((a, b) => (a.end > b.end ? a : b));
+}
+
+/** Newest value for a point-in-time (balance-sheet) concept. */
+function pickInstant(units?: XbrlFact[]): XbrlFact | null {
+  if (!units || units.length === 0) return null;
+  return units.reduce((a, b) => (a.end > b.end ? a : b));
+}
+
+function periodLabel(f: XbrlFact, instant = false): string {
+  if (instant) return `as of ${f.end}`;
+  if (f.fp === "FY" && f.fy) return `FY ${f.fy}`;
+  if (f.fp && f.fy) return `${f.fp} ${f.fy}`;
+  return f.end;
+}
+
+/**
+ * Fetch a handful of reported financials for one company from the SEC XBRL
+ * company-facts API. Every number is a value the company itself reported in a
+ * filing, tagged with the period it covers, so this is a live, unfabricated
+ * snapshot rather than a modeled estimate. Concepts vary by filer, so each line
+ * is emitted only when the company actually reports it.
+ */
+export async function fetchCompanyFinancials(cik: string | number | null): Promise<CompanyFinancial[]> {
+  const cikInt = Number(cik);
+  if (!Number.isFinite(cikInt) || cikInt <= 0) return [];
+  const padded = String(cikInt).padStart(10, "0");
+
+  return memo(`edgar-facts:${padded}`, HALF_DAY, async () => {
+    try {
+      const res = await fetch(`https://data.sec.gov/api/xbrl/companyfacts/CIK${padded}.json`, {
+        headers: { "User-Agent": UA, Accept: "application/json" },
+        next: { revalidate: HALF_DAY },
+      });
+      if (!res.ok) return [];
+      const d = (await res.json()) as CompanyFacts;
+      const gaap = d.facts?.["us-gaap"] ?? {};
+      const dei = d.facts?.dei ?? {};
+      const usd = (concept: string) => gaap[concept]?.units?.USD;
+      const out: CompanyFinancial[] = [];
+
+      const revenue = pickAnnual(usd("Revenues") ?? usd("RevenueFromContractWithCustomerExcludingAssessedTax"));
+      if (revenue) out.push({ label: "Total revenue", value: revenue.val, unit: "usd", period: periodLabel(revenue) });
+
+      const netIncome = pickAnnual(usd("NetIncomeLoss"));
+      if (netIncome) out.push({ label: "Net income", value: netIncome.val, unit: "usd", period: periodLabel(netIncome) });
+
+      const assets = pickInstant(usd("Assets"));
+      if (assets) out.push({ label: "Total assets", value: assets.val, unit: "usd", period: periodLabel(assets, true) });
+
+      const realEstate = pickInstant(usd("RealEstateInvestmentPropertyNet") ?? usd("RealEstateInvestmentPropertyAtCost"));
+      if (realEstate) out.push({ label: "Real estate assets", value: realEstate.val, unit: "usd", period: periodLabel(realEstate, true) });
+
+      const equity = pickInstant(usd("StockholdersEquity"));
+      if (equity) out.push({ label: "Total equity", value: equity.val, unit: "usd", period: periodLabel(equity, true) });
+
+      const shares = pickInstant(dei["EntityCommonStockSharesOutstanding"]?.units?.shares);
+      if (shares) out.push({ label: "Shares outstanding", value: shares.val, unit: "shares", period: periodLabel(shares, true) });
+
       return out;
     } catch {
       return [];

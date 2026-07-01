@@ -24,6 +24,13 @@ export const STUDENT_HOUSING_PLAYERS: SectorPlayersConfig = {
     "Purpose-built student housing has largely moved into private hands, so this roster blends the sector's defining REIT with the institutional owners that acquired it and the apartment REITs most exposed to university metros. Recent activity is pulled live from each firm's SEC filings.",
   companies: [
     {
+      name: "Greystar",
+      ticker: "PRIVATE",
+      cik: null,
+      note: "Largest US student-housing operator (via its 2018 EdR acquisition); privately held.",
+      site: "greystar.com",
+    },
+    {
       name: "American Campus Communities",
       ticker: "ACC",
       cik: 1283630,
